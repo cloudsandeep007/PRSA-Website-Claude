@@ -10,6 +10,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Database WAL files if sqlite
+# Legacy SQLite DB — replaced by Supabase Postgres; never re-commit a DB file (it holds real data/credentials)
+server/database.sqlite
 server/database.sqlite-shm
 server/database.sqlite-wal

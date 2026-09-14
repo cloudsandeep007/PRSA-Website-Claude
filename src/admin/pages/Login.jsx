@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, ShieldAlert, ArrowRight, ShieldCheck, Building, Terminal } from 'lucide-react';
 
 export default function Login({ setAuthToken }) {
-  const [email, setEmail] = useState('client@prsaroller.com');
-  const [password, setPassword] = useState('ClientAdmin@123456');
-  const [selectedRole, setSelectedRole] = useState('client'); // 'client' | 'super'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState('client'); // 'client' | 'super' — only affects post-login redirect hint, not credentials
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -13,13 +13,6 @@ export default function Login({ setAuthToken }) {
   const selectAccountMode = (mode) => {
     setSelectedRole(mode);
     setError('');
-    if (mode === 'client') {
-      setEmail('client@prsaroller.com');
-      setPassword('ClientAdmin@123456');
-    } else {
-      setEmail('superadmin@prsaroller.com');
-      setPassword('SuperAdmin@123456');
-    }
   };
 
   const handleLogin = async (e) => {
@@ -178,9 +171,6 @@ export default function Login({ setAuthToken }) {
             <ShieldCheck className="w-4 h-4 text-primary-container" />
             <span>256-Bit Encrypted Role Session</span>
           </div>
-          <p className="text-[11px] text-outline">
-            Client: client@prsaroller.com | Super Admin: superadmin@prsaroller.com
-          </p>
         </div>
       </div>
     </div>
