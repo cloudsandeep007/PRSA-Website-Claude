@@ -32,74 +32,32 @@ export default function PublicSite() {
   useEffect(() => {
     async function fetchAllData() {
       try {
-        const ts = Date.now();
         const [
-          resContent,
-          resSettings,
-          resPrograms,
-          resCoaches,
-          resEvents,
-          resAch,
-          resGallery,
-          resTest,
-          resLoc,
-          resFaqs
+          resContent, resSettings, resPrograms, resCoaches, resEvents,
+          resAch, resGallery, resTest, resLoc, resFaqs
         ] = await Promise.all([
-          fetch(`/api/content?t=${ts}`).then(r => r.json()).catch(() => ({})),
-          fetch(`/api/settings?t=${ts}`).then(r => r.json()).catch(() => ({})),
-          fetch(`/api/programs?t=${ts}`).then(r => r.json()).catch(() => ([])),
-          fetch(`/api/coaches?t=${ts}`).then(r => r.json()).catch(() => ([])),
-          fetch(`/api/events?t=${ts}`).then(r => r.json()).catch(() => ([])),
-          fetch(`/api/achievements?t=${ts}`).then(r => r.json()).catch(() => ([])),
-          fetch(`/api/gallery?t=${ts}`).then(r => r.json()).catch(() => ([])),
-          fetch(`/api/testimonials?t=${ts}`).then(r => r.json()).catch(() => ([])),
-          fetch(`/api/locations?t=${ts}`).then(r => r.json()).catch(() => ([])),
-          fetch(`/api/faqs?t=${ts}`).then(r => r.json()).catch(() => ([]))
+          fetch('/api/content').then(r => r.json()).catch(() => ({})),
+          fetch('/api/settings').then(r => r.json()).catch(() => ({})),
+          fetch('/api/programs').then(r => r.json()).catch(() => ([])),
+          fetch('/api/coaches').then(r => r.json()).catch(() => ([])),
+          fetch('/api/events').then(r => r.json()).catch(() => ([])),
+          fetch('/api/achievements').then(r => r.json()).catch(() => ([])),
+          fetch('/api/gallery').then(r => r.json()).catch(() => ([])),
+          fetch('/api/testimonials').then(r => r.json()).catch(() => ([])),
+          fetch('/api/locations').then(r => r.json()).catch(() => ([])),
+          fetch('/api/faqs').then(r => r.json()).catch(() => ([]))
         ]);
 
-        let localContent = {}, localSettings = null, localPrograms = null, localCoaches = null, localEvents = null, localAch = null, localGallery = null, localTest = null, localLoc = null, localFaqs = null;
-        try {
-          const rawContent = localStorage.getItem('prsa_live_content');
-          if (rawContent) localContent = JSON.parse(rawContent);
-
-          const rawSettings = localStorage.getItem('prsa_live_settings');
-          if (rawSettings) localSettings = JSON.parse(rawSettings);
-
-          const rawCoaches = localStorage.getItem('prsa_live_coaches');
-          if (rawCoaches) localCoaches = JSON.parse(rawCoaches);
-
-          const rawPrograms = localStorage.getItem('prsa_live_programs');
-          if (rawPrograms) localPrograms = JSON.parse(rawPrograms);
-
-          const rawEvents = localStorage.getItem('prsa_live_events');
-          if (rawEvents) localEvents = JSON.parse(rawEvents);
-
-          const rawAch = localStorage.getItem('prsa_live_achievements');
-          if (rawAch) localAch = JSON.parse(rawAch);
-
-          const rawGallery = localStorage.getItem('prsa_live_gallery');
-          if (rawGallery) localGallery = JSON.parse(rawGallery);
-
-          const rawTest = localStorage.getItem('prsa_live_testimonials');
-          if (rawTest) localTest = JSON.parse(rawTest);
-
-          const rawLoc = localStorage.getItem('prsa_live_locations');
-          if (rawLoc) localLoc = JSON.parse(rawLoc);
-
-          const rawFaqs = localStorage.getItem('prsa_live_faqs');
-          if (rawFaqs) localFaqs = JSON.parse(rawFaqs);
-        } catch (lErr) {}
-
-        setContent({ ...(resContent || {}), ...localContent });
-        setSettings(localSettings || resSettings || {});
-        setPrograms(localPrograms || resPrograms || []);
-        setCoaches(localCoaches || resCoaches || []);
-        setEvents(localEvents || resEvents || []);
-        setAchievements(localAch || resAch || []);
-        setGallery(localGallery || resGallery || []);
-        setTestimonials(localTest || resTest || []);
-        setLocations(localLoc || resLoc || []);
-        setFaqs(localFaqs || resFaqs || []);
+        setContent(resContent || {});
+        setSettings(resSettings || {});
+        setPrograms(resPrograms || []);
+        setCoaches(resCoaches || []);
+        setEvents(resEvents || []);
+        setAchievements(resAch || []);
+        setGallery(resGallery || []);
+        setTestimonials(resTest || []);
+        setLocations(resLoc || []);
+        setFaqs(resFaqs || []);
       } catch (err) {
         console.error('Failed to load website data:', err);
       } finally {
@@ -108,48 +66,6 @@ export default function PublicSite() {
     }
 
     fetchAllData();
-
-    const handleUpdate = () => {
-      try {
-        const rawContent = localStorage.getItem('prsa_live_content');
-        if (rawContent) setContent(prev => ({ ...prev, ...JSON.parse(rawContent) }));
-
-        const rawSettings = localStorage.getItem('prsa_live_settings');
-        if (rawSettings) setSettings(JSON.parse(rawSettings));
-
-        const rawCoaches = localStorage.getItem('prsa_live_coaches');
-        if (rawCoaches) setCoaches(JSON.parse(rawCoaches));
-
-        const rawPrograms = localStorage.getItem('prsa_live_programs');
-        if (rawPrograms) setPrograms(JSON.parse(rawPrograms));
-
-        const rawEvents = localStorage.getItem('prsa_live_events');
-        if (rawEvents) setEvents(JSON.parse(rawEvents));
-
-        const rawAch = localStorage.getItem('prsa_live_achievements');
-        if (rawAch) setAchievements(JSON.parse(rawAch));
-
-        const rawGallery = localStorage.getItem('prsa_live_gallery');
-        if (rawGallery) setGallery(JSON.parse(rawGallery));
-
-        const rawTest = localStorage.getItem('prsa_live_testimonials');
-        if (rawTest) setTestimonials(JSON.parse(rawTest));
-
-        const rawLoc = localStorage.getItem('prsa_live_locations');
-        if (rawLoc) setLocations(JSON.parse(rawLoc));
-
-        const rawFaqs = localStorage.getItem('prsa_live_faqs');
-        if (rawFaqs) setFaqs(JSON.parse(rawFaqs));
-      } catch (e) {}
-    };
-
-    window.addEventListener('prsa_content_updated', handleUpdate);
-    window.addEventListener('storage', handleUpdate);
-
-    return () => {
-      window.removeEventListener('prsa_content_updated', handleUpdate);
-      window.removeEventListener('storage', handleUpdate);
-    };
   }, []);
 
   if (loading) {

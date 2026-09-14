@@ -355,6 +355,12 @@ app.put('/api/admin/settings', ...superAdminOnly, ah(async (req, res) => {
 function registerCrud(entity, { table, columns, insertPlaceholders, publishable = true }) {
   const base = `/api/admin/${entity}`;
 
+  // Admin list: unlike the public GET, this returns every row (including unpublished drafts)
+  app.get(base, ...superAdminOnly, ah(async (req, res) => {
+    const { rows } = await query(`SELECT * FROM ${table} ORDER BY id DESC`);
+    res.json(rows);
+  }));
+
   app.post(base, ...superAdminOnly, ah(async (req, res) => {
     const values = columns.map(c => req.body[c]);
     const { rows } = await query(
