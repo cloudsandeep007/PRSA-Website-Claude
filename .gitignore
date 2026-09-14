@@ -4,6 +4,7 @@ dist-ssr
 *.local
 .env
 .env.*
+!.env.example
 .DS_Store
 *.log
 npm-debug.log*
@@ -17,3 +18,8 @@ server/database.sqlite-wal
 
 # Media now lives in Supabase Storage (see server/migrate-media.js); local uploads are no longer served
 public/uploads
+
+# One-time design scaffolding from the initial project export — not used by the app
+stitch_apex_skate_academy.zip
+stitch_extracted
+downloaded_media

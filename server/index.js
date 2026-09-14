@@ -553,6 +553,7 @@ app.use((err, req, res, next) => {
 });
 
 const isServerless = !!(process.env.VERCEL || process.env.AWS_EXECUTION_ENV || process.env.LAMBDA_TASK_ROOT);
+const isTest = process.env.NODE_ENV === 'test';
 
 let readyPromise = null;
 export function ensureReady() {
@@ -566,7 +567,7 @@ export function ensureReady() {
   return readyPromise;
 }
 
-if (!isServerless) {
+if (!isServerless && !isTest) {
   ensureReady().then(() => {
     app.listen(PORT, () => {
       console.log(`\n🚀 PRSA Express Server running on http://localhost:${PORT}`);
