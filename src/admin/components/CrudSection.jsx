@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, AlertCircle } from 'lucide-react';
 import { useEntityList } from '../hooks/useEntityList';
 import EntityEditModal from './EntityEditModal';
+import ConfirmDialog from './ConfirmDialog';
 import { CONTENT_ENTITIES } from '../config/contentEntities';
 
 // One content tab (Programs, Coaches, Events, ...): fetches the list, renders
@@ -13,10 +14,12 @@ export default function CrudSection({ entityKey, authToken, gridClassName, rende
   const entityConfig = CONTENT_ENTITIES[entityKey];
   const { items, loading, error, save, remove } = useEntityList(entityKey, authToken);
   const [editingItem, setEditingItem] = useState(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [deleteError, setDeleteError] = useState('');
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
+  const confirmDelete = async () => {
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     setDeleteError('');
     try {
       await remove(id);
@@ -52,7 +55,7 @@ export default function CrudSection({ entityKey, authToken, gridClassName, rende
       )}
 
       <div className={gridClassName || 'grid grid-cols-1 md:grid-cols-2 gap-4'}>
-        {items.map((item) => renderCard(item, { onEdit: () => setEditingItem(item), onDelete: () => handleDelete(item.id) }))}
+        {items.map((item) => renderCard(item, { onEdit: () => setEditingItem(item), onDelete: () => setPendingDeleteId(item.id) }))}
       </div>
 
       {editingItem && (
@@ -63,6 +66,15 @@ export default function CrudSection({ entityKey, authToken, gridClassName, rende
           authToken={authToken}
           onCancel={() => setEditingItem(null)}
           onSave={handleSave}
+        />
+      )}
+
+      {pendingDeleteId !== null && (
+        <ConfirmDialog
+          title={`Delete this ${entityConfig.label.toLowerCase()}?`}
+          message="This can't be undone."
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDeleteId(null)}
         />
       )}
     </div>

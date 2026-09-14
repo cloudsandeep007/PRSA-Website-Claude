@@ -549,6 +549,9 @@ app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError || /Only image\/video/.test(err.message || '')) {
     return res.status(400).json({ error: err.message });
   }
+  if (err.type === 'entity.parse.failed' || err.status === 400) {
+    return res.status(400).json({ error: 'Malformed request body' });
+  }
   res.status(500).json({ error: 'Internal server error' });
 });
 

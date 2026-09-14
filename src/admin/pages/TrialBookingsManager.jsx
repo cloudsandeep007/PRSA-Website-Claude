@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Filter, Trash2, CheckCircle, Clock, AlertCircle, Save, Phone, Mail } from 'lucide-react';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function TrialBookingsManager({ authToken }) {
   const [bookings, setBookings] = useState([]);
@@ -8,6 +9,7 @@ export default function TrialBookingsManager({ authToken }) {
   const [statusFilter, setStatusFilter] = useState('');
   const [editingNotesId, setEditingNotesId] = useState(null);
   const [notesText, setNotesText] = useState('');
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   async function fetchBookings() {
     setLoading(true);
@@ -71,8 +73,9 @@ export default function TrialBookingsManager({ authToken }) {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this trial booking entry?')) return;
+  const confirmDelete = async () => {
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       const res = await fetch(`/api/admin/trial-bookings/${id}`, {
         method: 'DELETE',
@@ -223,7 +226,7 @@ export default function TrialBookingsManager({ authToken }) {
 
                     <td className="p-4 text-right">
                       <button
-                        onClick={() => handleDelete(b.id)}
+                        onClick={() => setPendingDeleteId(b.id)}
                         className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors"
                         title="Delete Lead"
                       >
@@ -237,6 +240,15 @@ export default function TrialBookingsManager({ authToken }) {
           </div>
         )}
       </div>
+
+      {pendingDeleteId !== null && (
+        <ConfirmDialog
+          title="Delete this trial booking?"
+          message="This can't be undone."
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
     </div>
   );
 }

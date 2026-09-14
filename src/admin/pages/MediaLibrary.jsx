@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Upload, Copy, Trash2, CheckCircle2, Image as ImageIcon } from 'lucide-react';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function MediaLibrary({ authToken }) {
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState('');
+  const [pendingDeleteFilename, setPendingDeleteFilename] = useState(null);
 
   async function fetchMedia() {
     setLoading(true);
@@ -58,8 +60,9 @@ export default function MediaLibrary({ authToken }) {
     setTimeout(() => setCopiedUrl(''), 3000);
   };
 
-  const handleDelete = async (filename) => {
-    if (!window.confirm(`Delete ${filename}?`)) return;
+  const confirmDelete = async () => {
+    const filename = pendingDeleteFilename;
+    setPendingDeleteFilename(null);
     try {
       const res = await fetch(`/api/admin/media/${filename}`, {
         method: 'DELETE',
@@ -125,7 +128,7 @@ export default function MediaLibrary({ authToken }) {
                   <Copy className="w-3 h-3" /> Copy URL
                 </button>
                 <button
-                  onClick={() => handleDelete(file.filename)}
+                  onClick={() => setPendingDeleteFilename(file.filename)}
                   className="p-1.5 rounded text-red-400 hover:bg-red-500/20"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -134,6 +137,15 @@ export default function MediaLibrary({ authToken }) {
             </div>
           ))}
         </div>
+      )}
+
+      {pendingDeleteFilename !== null && (
+        <ConfirmDialog
+          title="Delete this file?"
+          message={`${pendingDeleteFilename} will be permanently removed from storage.`}
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDeleteFilename(null)}
+        />
       )}
     </div>
   );

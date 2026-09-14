@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Mail, Phone, Trash2, CheckCircle, Clock } from 'lucide-react';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function ContactEnquiriesManager({ authToken }) {
   const [enquiries, setEnquiries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   async function fetchEnquiries() {
     setLoading(true);
@@ -42,8 +44,9 @@ export default function ContactEnquiriesManager({ authToken }) {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this contact enquiry?')) return;
+  const confirmDelete = async () => {
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       const res = await fetch(`/api/admin/contact-enquiries/${id}`, {
         method: 'DELETE',
@@ -106,7 +109,7 @@ export default function ContactEnquiriesManager({ authToken }) {
                     Mark {e.status === 'New' ? 'Read' : 'Unread'}
                   </button>
                   <button
-                    onClick={() => handleDelete(e.id)}
+                    onClick={() => setPendingDeleteId(e.id)}
                     className="p-2 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -117,6 +120,15 @@ export default function ContactEnquiriesManager({ authToken }) {
           </div>
         )}
       </div>
+
+      {pendingDeleteId !== null && (
+        <ConfirmDialog
+          title="Delete this enquiry?"
+          message="This can't be undone."
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
     </div>
   );
 }
