@@ -30,22 +30,38 @@ export default function PublicSite() {
   const [faqs, setFaqs] = useState([]);
 
   useEffect(() => {
+    // fetch() only rejects on a network failure, not on a 4xx/5xx response —
+    // an API error still resolves with a parseable (non-array/object-shaped)
+    // JSON body, which would otherwise slip past .catch() and crash the page
+    // the first time any single endpoint has a transient failure.
+    async function fetchJson(url, fallback) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return fallback;
+        const data = await res.json();
+        if (Array.isArray(fallback) && !Array.isArray(data)) return fallback;
+        return data;
+      } catch (err) {
+        return fallback;
+      }
+    }
+
     async function fetchAllData() {
       try {
         const [
           resContent, resSettings, resPrograms, resCoaches, resEvents,
           resAch, resGallery, resTest, resLoc, resFaqs
         ] = await Promise.all([
-          fetch('/api/content').then(r => r.json()).catch(() => ({})),
-          fetch('/api/settings').then(r => r.json()).catch(() => ({})),
-          fetch('/api/programs').then(r => r.json()).catch(() => ([])),
-          fetch('/api/coaches').then(r => r.json()).catch(() => ([])),
-          fetch('/api/events').then(r => r.json()).catch(() => ([])),
-          fetch('/api/achievements').then(r => r.json()).catch(() => ([])),
-          fetch('/api/gallery').then(r => r.json()).catch(() => ([])),
-          fetch('/api/testimonials').then(r => r.json()).catch(() => ([])),
-          fetch('/api/locations').then(r => r.json()).catch(() => ([])),
-          fetch('/api/faqs').then(r => r.json()).catch(() => ([]))
+          fetchJson('/api/content', {}),
+          fetchJson('/api/settings', {}),
+          fetchJson('/api/programs', []),
+          fetchJson('/api/coaches', []),
+          fetchJson('/api/events', []),
+          fetchJson('/api/achievements', []),
+          fetchJson('/api/gallery', []),
+          fetchJson('/api/testimonials', []),
+          fetchJson('/api/locations', []),
+          fetchJson('/api/faqs', [])
         ]);
 
         setContent(resContent || {});

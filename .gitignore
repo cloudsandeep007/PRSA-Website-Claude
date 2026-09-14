@@ -23,3 +23,6 @@ public/uploads
 stitch_apex_skate_academy.zip
 stitch_extracted
 downloaded_media
+
+.vercel
+.env*
