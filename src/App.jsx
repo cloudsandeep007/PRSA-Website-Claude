@@ -12,6 +12,10 @@ import SEOManager from './admin/pages/SEOManager';
 import SettingsManager from './admin/pages/SettingsManager';
 import DeveloperPortal from './admin/pages/DeveloperPortal';
 
+function RequireSuperAdmin({ isSuperAdmin, children }) {
+  return isSuperAdmin ? children : <Navigate to="/admin/dashboard" replace />;
+}
+
 export default function App() {
   const [authToken, setAuthToken] = useState(() => localStorage.getItem('prsa_admin_token') || '');
 
@@ -20,6 +24,12 @@ export default function App() {
     localStorage.removeItem('prsa_admin_user');
     setAuthToken('');
   };
+
+  let isSuperAdmin = false;
+  try {
+    const user = JSON.parse(localStorage.getItem('prsa_admin_user') || 'null');
+    isSuperAdmin = user?.role === 'Super Admin';
+  } catch (e) { /* malformed/missing stored user, default to least privilege */ }
 
   return (
     <Routes>
@@ -43,14 +53,14 @@ export default function App() {
           ) : (
             <AdminLayout authToken={authToken} onLogout={handleLogout}>
               <Routes>
-                <Route path="dashboard" element={<Dashboard authToken={authToken} />} />
+                <Route path="dashboard" element={<Dashboard authToken={authToken} isSuperAdmin={isSuperAdmin} />} />
                 <Route path="trial-bookings" element={<TrialBookingsManager authToken={authToken} />} />
                 <Route path="contact-enquiries" element={<ContactEnquiriesManager authToken={authToken} />} />
-                <Route path="content" element={<ContentManager authToken={authToken} />} />
-                <Route path="media" element={<MediaLibrary authToken={authToken} />} />
-                <Route path="seo" element={<SEOManager authToken={authToken} />} />
-                <Route path="settings" element={<SettingsManager authToken={authToken} />} />
-                <Route path="developer" element={<DeveloperPortal authToken={authToken} />} />
+                <Route path="content" element={<RequireSuperAdmin isSuperAdmin={isSuperAdmin}><ContentManager authToken={authToken} /></RequireSuperAdmin>} />
+                <Route path="media" element={<RequireSuperAdmin isSuperAdmin={isSuperAdmin}><MediaLibrary authToken={authToken} /></RequireSuperAdmin>} />
+                <Route path="seo" element={<RequireSuperAdmin isSuperAdmin={isSuperAdmin}><SEOManager authToken={authToken} /></RequireSuperAdmin>} />
+                <Route path="settings" element={<RequireSuperAdmin isSuperAdmin={isSuperAdmin}><SettingsManager authToken={authToken} /></RequireSuperAdmin>} />
+                <Route path="developer" element={<RequireSuperAdmin isSuperAdmin={isSuperAdmin}><DeveloperPortal authToken={authToken} /></RequireSuperAdmin>} />
                 <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
               </Routes>
             </AdminLayout>

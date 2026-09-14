@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import pool, { query, initDb } from './db.js';
 import { seedDatabase } from './seed.js';
+import { uploadFile, listFiles, deleteFile } from './storage.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,11 +35,18 @@ const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
   .map(s => s.trim())
   .filter(Boolean);
 
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error('Not allowed by CORS'));
-  }
+// Scoped to /api only — static assets (JS/CSS bundle) are requested with the
+// crossorigin attribute by the Vite build and must not be rejected by this check.
+// A request to its own serving origin (the SPA calling its own API) is always
+// allowed; allowedOrigins covers genuinely cross-origin cases like the Vite dev server.
+app.use('/api', cors((req, callback) => {
+  const selfOrigin = `${req.protocol}://${req.get('host')}`;
+  callback(null, {
+    origin(origin, cb) {
+      if (!origin || origin === selfOrigin || allowedOrigins.includes(origin)) return cb(null, true);
+      cb(new Error('Not allowed by CORS'));
+    }
+  });
 }));
 
 app.use(express.json({ limit: '15mb' }));
@@ -57,39 +65,18 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-// Serve uploaded media statically
-const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
-osEnsureDir(uploadsDir);
-if (fs.existsSync(uploadsDir)) {
-  app.use('/uploads', express.static(uploadsDir));
-}
-
-// Also serve the built frontend in production
+// Serve the built frontend in production
 const distDir = path.join(__dirname, '..', 'dist');
 if (fs.existsSync(distDir)) {
   app.use(express.static(distDir));
 }
 
-function osEnsureDir(dir) {
-  try {
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  } catch (err) {
-    console.warn('Could not create uploads directory (read-only filesystem):', err.message);
-  }
-}
-
 const ALLOWED_UPLOAD_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.mp4', '.webm', '.mov']);
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, 'upload-' + uniqueSuffix + ext);
-  }
-});
+// Uploads are held in memory only long enough to forward them to Supabase Storage —
+// nothing is written to the (ephemeral, read-only-on-Vercel) local filesystem.
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 15 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
@@ -437,15 +424,17 @@ registerCrud('faqs', {
   insertPlaceholders: '$1,$2,$3,$4'
 });
 
-// Media Manager: Upload File
+// Media Manager: Upload File (streamed to Supabase Storage, never touches local disk)
 app.post('/api/admin/media/upload', ...superAdminOnly, upload.single('file'), ah(async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  const fileUrl = `/uploads/${req.file.filename}`;
-  await logActivity(req.user.email, 'Uploaded Media File', fileUrl);
+  const ext = path.extname(req.file.originalname).toLowerCase();
+  const filename = `upload-${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+  const url = await uploadFile(filename, req.file.buffer, req.file.mimetype);
+  await logActivity(req.user.email, 'Uploaded Media File', url);
   res.json({
     success: true,
-    url: fileUrl,
-    filename: req.file.filename,
+    url,
+    filename,
     originalName: req.file.originalname,
     size: req.file.size
   });
@@ -453,29 +442,16 @@ app.post('/api/admin/media/upload', ...superAdminOnly, upload.single('file'), ah
 
 // Media Manager: List Uploaded Files
 app.get('/api/admin/media', ...superAdminOnly, ah(async (req, res) => {
-  const files = await fs.promises.readdir(uploadsDir);
-  const mediaFiles = await Promise.all(files.map(async f => {
-    const stat = await fs.promises.stat(path.join(uploadsDir, f));
-    return { filename: f, url: `/uploads/${f}`, size: stat.size, created_at: stat.birthtime };
-  }));
-  mediaFiles.sort((a, b) => b.created_at - a.created_at);
+  const mediaFiles = await listFiles();
   res.json(mediaFiles);
 }));
 
-// Media Manager: Delete File (filename sanitized against path traversal)
+// Media Manager: Delete File
 app.delete('/api/admin/media/:filename', ...superAdminOnly, ah(async (req, res) => {
   const safeName = path.basename(req.params.filename);
-  const filePath = path.join(uploadsDir, safeName);
-  if (!filePath.startsWith(uploadsDir)) {
-    return res.status(400).json({ error: 'Invalid filename' });
-  }
-  if (fs.existsSync(filePath)) {
-    await fs.promises.unlink(filePath);
-    await logActivity(req.user.email, 'Deleted Media File', safeName);
-    res.json({ success: true });
-  } else {
-    res.status(404).json({ error: 'File not found' });
-  }
+  await deleteFile(safeName);
+  await logActivity(req.user.email, 'Deleted Media File', safeName);
+  res.json({ success: true });
 }));
 
 app.get('/api/admin/activity-logs', ...superAdminOnly, ah(async (req, res) => {
@@ -506,17 +482,9 @@ app.get('/api/admin/developer/status', ...superAdminOnly, ah(async (req, res) =>
     tableCounts[table] = await count(table);
   }
 
-  let mediaCount = 0;
-  let totalSizeBytes = 0;
-  if (fs.existsSync(uploadsDir)) {
-    const files = await fs.promises.readdir(uploadsDir);
-    mediaCount = files.length;
-    for (const f of files) {
-      try {
-        totalSizeBytes += (await fs.promises.stat(path.join(uploadsDir, f))).size;
-      } catch (e) { /* file may have been removed concurrently */ }
-    }
-  }
+  const mediaFiles = await listFiles();
+  const mediaCount = mediaFiles.length;
+  const totalSizeBytes = mediaFiles.reduce((sum, f) => sum + (f.size || 0), 0);
 
   res.json({
     success: true,

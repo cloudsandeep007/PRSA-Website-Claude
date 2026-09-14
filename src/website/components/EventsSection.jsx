@@ -10,7 +10,7 @@ const defaultEvents = [
     time_str: "6:00 AM onwards",
     location: "PRSA Banked Speed Track Arena, Electronic City",
     description: "Cadet, Sub-Junior & Junior Quad/Inline divisions. 300m Time Trial, 500m Sprint, and 1000m Rink Race selection trials.",
-    image_url: "/uploads/prsa_media_10.jpg",
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg",
     registration_status: "Open"
   },
   {
@@ -21,7 +21,7 @@ const defaultEvents = [
     time_str: "Full Day Fixtures",
     location: "National Velodrome Sports Complex",
     description: "Track & Road Speed, Inline Freestyle Slalom, and Roller Hockey showcase representing Team Karnataka.",
-    image_url: "/uploads/prsa_media_11.jpg",
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_11.jpg",
     registration_status: "Confirmed"
   },
   {
@@ -32,7 +32,7 @@ const defaultEvents = [
     time_str: "7:00 AM – 5:00 PM",
     location: "PRSA Arena & HSR Campus Track",
     description: "Featuring 45+ participating schools across Bangalore. Medals awarded for Quad & Inline speed categories.",
-    image_url: "/uploads/prsa_media_03.jpg",
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_03.jpg",
     registration_status: "Open"
   }
 ];

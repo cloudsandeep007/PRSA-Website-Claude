@@ -14,3 +14,6 @@ yarn-error.log*
 server/database.sqlite
 server/database.sqlite-shm
 server/database.sqlite-wal
+
+# Media now lives in Supabase Storage (see server/migrate-media.js); local uploads are no longer served
+public/uploads

@@ -14,7 +14,7 @@ import {
   Activity
 } from 'lucide-react';
 
-export default function Dashboard({ authToken }) {
+export default function Dashboard({ authToken, isSuperAdmin }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -71,7 +71,7 @@ export default function Dashboard({ authToken }) {
       </div>
 
       {/* Metrics Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className={`grid grid-cols-2 ${isSuperAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-2'} gap-4`}>
         <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/20 space-y-2 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-on-surface-variant">TOTAL TRIAL BOOKINGS</span>
@@ -90,29 +90,33 @@ export default function Dashboard({ authToken }) {
           <div className="text-[11px] text-secondary font-semibold">{data.newEnquiries} Unread</div>
         </div>
 
-        <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/20 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-on-surface-variant">ACTIVE PROGRAMS</span>
-            <FileText className="w-5 h-5 text-primary" />
-          </div>
-          <div className="text-3xl font-bold text-primary">{data.totalPrograms}</div>
-          <div className="text-[11px] text-outline">Published Disciplines</div>
-        </div>
+        {isSuperAdmin && (
+          <>
+            <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/20 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-on-surface-variant">ACTIVE PROGRAMS</span>
+                <FileText className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-3xl font-bold text-primary">{data.totalPrograms}</div>
+              <div className="text-[11px] text-outline">Published Disciplines</div>
+            </div>
 
-        <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/20 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-on-surface-variant">MEDIA GALLERY</span>
-            <Image className="w-5 h-5 text-primary-container" />
-          </div>
-          <div className="text-3xl font-bold text-primary-container">{data.totalGallery}</div>
-          <div className="text-[11px] text-outline">Photos & Videos</div>
-        </div>
+            <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/20 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-on-surface-variant">MEDIA GALLERY</span>
+                <Image className="w-5 h-5 text-primary-container" />
+              </div>
+              <div className="text-3xl font-bold text-primary-container">{data.totalGallery}</div>
+              <div className="text-[11px] text-outline">Photos & Videos</div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Main Grid: Recent Bookings & Audit Trail */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Recent Trial Bookings */}
-        <div className="lg:col-span-7 bg-surface-container-low p-6 rounded-2xl border border-outline-variant/30 space-y-4">
+        <div className={`${isSuperAdmin ? 'lg:col-span-7' : 'lg:col-span-12'} bg-surface-container-low p-6 rounded-2xl border border-outline-variant/30 space-y-4`}>
           <div className="flex items-center justify-between border-b border-outline-variant/20 pb-3">
             <h3 className="text-base font-bold text-primary">Recent Free Trial Requests</h3>
             <Link to="/admin/trial-bookings" className="text-xs text-primary-container hover:underline font-semibold">
@@ -120,7 +124,7 @@ export default function Dashboard({ authToken }) {
             </Link>
           </div>
 
-          {data.recentBookings.length === 0 ? (
+          {(data.recentBookings || []).length === 0 ? (
             <div className="text-xs text-outline py-4">No trial bookings submitted yet.</div>
           ) : (
             <div className="space-y-3">
@@ -145,27 +149,29 @@ export default function Dashboard({ authToken }) {
           )}
         </div>
 
-        {/* Activity Audit Log */}
-        <div className="lg:col-span-5 bg-surface-container-low p-6 rounded-2xl border border-outline-variant/30 space-y-4">
-          <div className="flex items-center justify-between border-b border-outline-variant/20 pb-3">
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-primary-container" />
-              <h3 className="text-base font-bold text-primary">Recent System Activity</h3>
+        {/* Activity Audit Log — Super Admin only */}
+        {isSuperAdmin && (
+          <div className="lg:col-span-5 bg-surface-container-low p-6 rounded-2xl border border-outline-variant/30 space-y-4">
+            <div className="flex items-center justify-between border-b border-outline-variant/20 pb-3">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-primary-container" />
+                <h3 className="text-base font-bold text-primary">Recent System Activity</h3>
+              </div>
+            </div>
+
+            <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+              {(data.recentLogs || []).map((log) => (
+                <div key={log.id} className="text-xs space-y-0.5 border-b border-outline-variant/10 pb-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-on-surface">{log.action}</span>
+                    <span className="text-[10px] text-outline">{new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                  <p className="text-[11px] text-on-surface-variant truncate">{log.details}</p>
+                </div>
+              ))}
             </div>
           </div>
-
-          <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
-            {data.recentLogs.map((log) => (
-              <div key={log.id} className="text-xs space-y-0.5 border-b border-outline-variant/10 pb-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-on-surface">{log.action}</span>
-                  <span className="text-[10px] text-outline">{new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-                <p className="text-[11px] text-on-surface-variant truncate">{log.details}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -80,7 +80,13 @@ export default function ContentManager({ authToken }) {
         safeFetchJson('/api/faqs', [])
       ]);
 
-      setContentMap(resContent || {});
+      let localContent = {};
+      try {
+        const rawContent = localStorage.getItem('prsa_live_content');
+        if (rawContent) localContent = JSON.parse(rawContent);
+      } catch (e) {}
+
+      setContentMap({ ...(resContent || {}), ...localContent });
 
       const getLocalOrApi = (type, apiData) => {
         try {
@@ -269,7 +275,7 @@ export default function ContentManager({ authToken }) {
         try {
           currentList = JSON.parse(contentMap.hero_slideshow_urls || '[]');
         } catch (e) {
-          currentList = ["/uploads/prsa_media_10.jpg"];
+          currentList = ["https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg"];
         }
         const updatedList = [...currentList, finalImageUrl];
         setContentMap(prev => ({ ...prev, hero_slideshow_urls: JSON.stringify(updatedList) }));
@@ -290,7 +296,7 @@ export default function ContentManager({ authToken }) {
     try {
       currentList = JSON.parse(contentMap.hero_slideshow_urls || '[]');
     } catch (e) {
-      currentList = ["/uploads/prsa_media_10.jpg", "/uploads/prsa_media_02.jpg"];
+      currentList = ["https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg", "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_02.jpg"];
     }
     const updatedList = currentList.filter((_, idx) => idx !== indexToRemove);
     setContentMap(prev => ({ ...prev, hero_slideshow_urls: JSON.stringify(updatedList) }));
@@ -443,7 +449,7 @@ export default function ContentManager({ authToken }) {
   );
 
   // Parse current slideshow array
-  let currentSlideshow = ["/uploads/prsa_media_10.jpg", "/uploads/prsa_media_02.jpg", "/uploads/prsa_media_01.jpg"];
+  let currentSlideshow = ["https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg", "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_02.jpg", "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_01.jpg"];
   if (contentMap.hero_slideshow_urls) {
     try {
       const parsed = JSON.parse(contentMap.hero_slideshow_urls);
@@ -566,7 +572,7 @@ export default function ContentManager({ authToken }) {
                     type="text"
                     value={contentMap.hero_bg_image || ''}
                     onChange={(e) => setContentMap({ ...contentMap, hero_bg_image: e.target.value })}
-                    placeholder="/uploads/prsa_media_10.jpg"
+                    placeholder="https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg"
                     className="flex-1 bg-surface-container-high text-xs p-3 rounded-lg border border-outline-variant/30 text-on-surface"
                   />
                   <label className="cursor-pointer px-4 py-3 rounded-lg bg-primary-container text-on-primary-container font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-md">
@@ -793,7 +799,7 @@ export default function ContentManager({ authToken }) {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button
-              onClick={() => { setEditType('programs'); setEditItem({ name: '', age_group: '', level: '', short_desc: '', full_desc: '', image_url: '/uploads/prsa_media_03.jpg', schedule: '3x Weekly', duration: '3 Months', display_order: programs.length + 1 }); }}
+              onClick={() => { setEditType('programs'); setEditItem({ name: '', age_group: '', level: '', short_desc: '', full_desc: '', image_url: 'https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_03.jpg', schedule: '3x Weekly', duration: '3 Months', display_order: programs.length + 1 }); }}
               className="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 shadow-md"
             >
               <Plus className="w-4 h-4" />
@@ -836,7 +842,7 @@ export default function ContentManager({ authToken }) {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button
-              onClick={() => { setEditType('coaches'); setEditItem({ name: '', position: '', photo_url: '/uploads/prsa_media_05.jpg', experience: '', specialization: '', achievements: '', bio: '', display_order: coaches.length + 1 }); }}
+              onClick={() => { setEditType('coaches'); setEditItem({ name: '', position: '', photo_url: 'https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_05.jpg', experience: '', specialization: '', achievements: '', bio: '', display_order: coaches.length + 1 }); }}
               className="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 shadow-md"
             >
               <Plus className="w-4 h-4" />
@@ -883,7 +889,7 @@ export default function ContentManager({ authToken }) {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button
-              onClick={() => { setEditType('events'); setEditItem({ title: '', category: 'State Trials', date_str: '', time_str: '', location: '', description: '', image_url: '/uploads/prsa_media_02.jpg', registration_status: 'Open' }); }}
+              onClick={() => { setEditType('events'); setEditItem({ title: '', category: 'State Trials', date_str: '', time_str: '', location: '', description: '', image_url: 'https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_02.jpg', registration_status: 'Open' }); }}
               className="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 shadow-md"
             >
               <Plus className="w-4 h-4" />
@@ -927,7 +933,7 @@ export default function ContentManager({ authToken }) {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button
-              onClick={() => { setEditType('achievements'); setEditItem({ title: '', category: 'State / National', year: '2026', count_label: '', description: '', image_url: '/uploads/prsa_media_01.jpg', display_order: achievements.length + 1 }); }}
+              onClick={() => { setEditType('achievements'); setEditItem({ title: '', category: 'State / National', year: '2026', count_label: '', description: '', image_url: 'https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_01.jpg', display_order: achievements.length + 1 }); }}
               className="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 shadow-md"
             >
               <Plus className="w-4 h-4" />
@@ -971,7 +977,7 @@ export default function ContentManager({ authToken }) {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button
-              onClick={() => { setEditType('gallery'); setEditItem({ title: '', category: 'All', media_type: 'image', url: '/uploads/prsa_media_01.jpg', caption: '', display_order: gallery.length + 1 }); }}
+              onClick={() => { setEditType('gallery'); setEditItem({ title: '', category: 'All', media_type: 'image', url: 'https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_01.jpg', caption: '', display_order: gallery.length + 1 }); }}
               className="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 shadow-md"
             >
               <Plus className="w-4 h-4" />
@@ -1012,7 +1018,7 @@ export default function ContentManager({ authToken }) {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button
-              onClick={() => { setEditType('testimonials'); setEditItem({ name: '', role_desc: 'Parent', quote: '', rating: 5, photo_url: '/uploads/prsa_media_07.jpg' }); }}
+              onClick={() => { setEditType('testimonials'); setEditItem({ name: '', role_desc: 'Parent', quote: '', rating: 5, photo_url: 'https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_07.jpg' }); }}
               className="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 shadow-md"
             >
               <Plus className="w-4 h-4" />
@@ -1056,7 +1062,7 @@ export default function ContentManager({ authToken }) {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button
-              onClick={() => { setEditType('locations'); setEditItem({ name: '', tag_label: 'Main Track', address: '', phone: '+91 98765 43210', schedule: 'Tue-Sun 6AM-9:30AM', maps_url: '', description: '', photo_url: '/uploads/prsa_media_10.jpg', display_order: locations.length + 1 }); }}
+              onClick={() => { setEditType('locations'); setEditItem({ name: '', tag_label: 'Main Track', address: '', phone: '+91 98765 43210', schedule: 'Tue-Sun 6AM-9:30AM', maps_url: '', description: '', photo_url: 'https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg', display_order: locations.length + 1 }); }}
               className="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 shadow-md"
             >
               <Plus className="w-4 h-4" />

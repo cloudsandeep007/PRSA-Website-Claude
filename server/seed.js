@@ -77,13 +77,13 @@ const defaultSettings = [
 
 const defaultContent = [
   { key: "hero_type", value: "video" },
-  { key: "hero_video_url", value: "/uploads/create_a_video_for_my_sketing.mp4" },
+  { key: "hero_video_url", value: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/create_a_video_for_my_sketing.mp4" },
   { key: "hero_badge", value: "⚡ OFFICIAL RSFI AFFILIATED ACADEMY • BENGALURU, KARNATAKA" },
   { key: "hero_sub_badge", value: "ELECTRONIC CITY • NEO TOWN • HSR • FLOODLIT ARENA" },
   { key: "hero_title_1", value: "UNLEASH SPEED." },
   { key: "hero_title_2", value: "MASTER THE RINK." },
   { key: "hero_description", value: "Official RSFI roller skating training in Bangalore. From beginner balance & falling safety to podium medals at Ryan International, Viva Vibgyor, and State/National Championships." },
-  { key: "hero_bg_image", value: "/uploads/prsa_media_10.jpg" },
+  { key: "hero_bg_image", value: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg" },
   { key: "hero_cta_primary_text", value: "BOOK A FREE TRIAL CLASS" },
   { key: "hero_cta_primary_link", value: "#trial" },
   { key: "hero_cta_secondary_text", value: "VIEW REAL ACTION GALLERY" },
@@ -103,55 +103,55 @@ const programs = [
     name: "Beginner Tots & Kids", age_group: "AGES 4 – 7", level: "Grassroots Foundation",
     short_desc: "Fun balance, safe falling reflexes, motor coordination, and introductory quad skates. Designed to eliminate fear and build cheerful athletic confidence.",
     full_desc: "Our Tots program focuses on safety-first kinetic movement, gentle balance drills on 4-wheel quad skates, and gamified slalom obstacles. Protective gear and helmets are strictly required and provided for trial sessions.",
-    image_url: "/uploads/prsa_media_03.jpg", schedule: "3x Weekly • 45 Min", duration: "3 Months Level 1", display_order: 1
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_03.jpg", schedule: "3x Weekly • 45 Min", duration: "3 Months Level 1", display_order: 1
   },
   {
     name: "Basic & Recreational Quad Skating", age_group: "AGES 6+ & YOUTH", level: "Foundational Track",
     short_desc: "The core foundational curriculum. Master stride pushing, heel and toe stops, inside/outside edge control, and track awareness on quad and inline skates.",
     full_desc: "Students learn proper biomechanical posture, parallel stride returns, T-braking, and spin stops. Prepares skaters for both recreation and competitive squad tryouts.",
-    image_url: "/uploads/prsa_media_05.jpg", schedule: "3x Weekly • 60 Min", duration: "4 Months Module", display_order: 2
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_05.jpg", schedule: "3x Weekly • 60 Min", duration: "4 Months Module", display_order: 2
   },
   {
     name: "Intermediate Quad & Inline Velocity", age_group: "VELOCITY TIER", level: "Intermediate Speed",
     short_desc: "Translating baseline control into high-velocity track performance. Introduces banked corner crossovers, slipstream drafting, and interval endurance.",
     full_desc: "Focuses on high-speed corner crossovers, aerodynamic tuck positions, cadence modulation, and endurance building on banked synthetic track surfaces.",
-    image_url: "/uploads/prsa_media_11.jpg", schedule: "4x Weekly • 75 Min", duration: "6 Months Squad", display_order: 3
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_11.jpg", schedule: "4x Weekly • 75 Min", duration: "6 Months Squad", display_order: 3
   },
   {
     name: "RSFI Speed Roller Racing (Elite Squad)", age_group: "COMPETITIVE PODIUM", level: "National Level",
     short_desc: "Exclusive RSFI sanctioned speed track & road squad. Transponder timing, 110mm inline speed boots, tactical race simulation, and state/national prep.",
     full_desc: "Designed for elite speed racers preparing for district, state, and RSFI National Championships. Features electronic transponder lap telemetry, sprint interval training, and customized athlete nutrition plans.",
-    image_url: "/uploads/prsa_media_13.jpg", schedule: "5x Weekly • 90 Min", duration: "Annual High-Performance", display_order: 4
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_13.jpg", schedule: "5x Weekly • 90 Min", duration: "Annual High-Performance", display_order: 4
   },
   {
     name: "Artistic & Freestyle Slalom", age_group: "ALL AGES", level: "Specialized Technique",
     short_desc: "Precision cone slalom maneuvers, toe-wheel balance, spin turns, and choreographic expression on specialized rocker-frame skates.",
     full_desc: "Teaches speed slalom, crazy legs, wheelies, and artistic expression around precision cone tracks under certified slalom instructors.",
-    image_url: "/uploads/prsa_media_15.jpg", schedule: "3x Weekly • 60 Min", duration: "Ongoing", display_order: 5
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_15.jpg", schedule: "3x Weekly • 60 Min", duration: "Ongoing", display_order: 5
   },
   {
     name: "Adult Fitness & Open Rink", age_group: "ADULTS & MASTERS", level: "Fitness & Conditioning",
     short_desc: "Low-impact cardiovascular conditioning, core stability, and weekend open rink sessions for working professionals and adult skating enthusiasts.",
     full_desc: "Enjoy the joint-friendly cardio benefits of roller skating in a supportive, adult-only evening batch with equipment assistance.",
-    image_url: "/uploads/prsa_media_06.jpg", schedule: "Weekend & Night Batches", duration: "Flexible Pass", display_order: 6
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_06.jpg", schedule: "Weekend & Night Batches", duration: "Flexible Pass", display_order: 6
   }
 ];
 
 const coaches = [
   {
-    name: "Coach Arjun Kumar", position: "Head Coach & Founder", photo_url: "/uploads/prsa_media_02.jpg", experience: "14+ Years Experience",
+    name: "Coach Arjun Kumar", position: "Head Coach & Founder", photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_02.jpg", experience: "14+ Years Experience",
     specialization: "RSFI Certified • Inline Speed & National Squad Lead", achievements: "Former National Gold Medalist, Trained 45+ State Medalists",
     bio: "Chief Coach Arjun has over 14 years of professional coaching experience across Karnataka. He holds official Level 3 RSFI certification and leads PRSA's high-performance speed racing contingent.",
     display_order: 1
   },
   {
-    name: "Coach Pooja Sharma", position: "Chief Tots & Quad Instructor", photo_url: "/uploads/prsa_media_05.jpg", experience: "8+ Years Experience",
+    name: "Coach Pooja Sharma", position: "Chief Tots & Quad Instructor", photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_05.jpg", experience: "8+ Years Experience",
     specialization: "Child Biomechanics & Quad Foundations", achievements: "Certified Physical Educator, Specialist in Grassroots Confidence",
     bio: "Coach Pooja specializes in early childhood balance, fear elimination, and fun quad skate mastery. Her patient method has helped over 400 young kids fall in love with roller sports.",
     display_order: 2
   },
   {
-    name: "Coach Rajesh Varma", position: "Freestyle Slalom & Technical Lead", photo_url: "/uploads/prsa_media_08.jpg", experience: "10+ Years Experience",
+    name: "Coach Rajesh Varma", position: "Freestyle Slalom & Technical Lead", photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_08.jpg", experience: "10+ Years Experience",
     specialization: "Artistic Slalom & Cone Precision", achievements: "National Slalom Judge, International Clinic Delegate",
     bio: "Coach Rajesh guides PRSA skaters through high-speed slalom tricks, rocker frame setup, and artistic posture for state & national competitions.",
     display_order: 3
@@ -163,28 +163,28 @@ const events = [
     title: "Karnataka State Roller Skating Championship & Trials", category: "RSFI STATE CHAMPIONSHIP", date_str: "OCT 24 - 28", time_str: "6:00 AM onwards",
     location: "PRSA Banked Speed Track Arena, Electronic City",
     description: "Cadet, Sub-Junior & Junior Quad/Inline divisions. 300m Time Trial, 500m Sprint, and 1000m Rink Race selection trials.",
-    image_url: "/uploads/prsa_media_10.jpg", registration_status: "Open"
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg", registration_status: "Open"
   },
   {
     title: "RSFI 62nd National Roller Skating Championship", category: "NATIONAL CHAMPIONSHIP", date_str: "NOV 10 - 14", time_str: "Full Day Fixtures",
     location: "National Velodrome Sports Complex",
     description: "Track & Road Speed, Inline Freestyle Slalom, and Roller Hockey showcase representing Team Karnataka.",
-    image_url: "/uploads/prsa_media_11.jpg", registration_status: "Confirmed"
+    image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_11.jpg", registration_status: "Confirmed"
   }
 ];
 
 const achievements = [
   {
     title: "Gold Medals — RSFI State Championship", category: "State Championship", year: "2024", count_label: "14 Gold",
-    description: "PRSA speed team dominated the 500m sprint and 1000m rink race events.", image_url: "/uploads/prsa_media_03.jpg", display_order: 1
+    description: "PRSA speed team dominated the 500m sprint and 1000m rink race events.", image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_03.jpg", display_order: 1
   },
   {
     title: "National Championship Podium Winners", category: "National Podium", year: "2023", count_label: "12 Medals",
-    description: "Represented Karnataka state at 61st RSFI National Championships.", image_url: "/uploads/prsa_media_13.jpg", display_order: 2
+    description: "Represented Karnataka state at 61st RSFI National Championships.", image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_13.jpg", display_order: 2
   },
   {
     title: "Ryan International & Vibgyor Inter-School Champions", category: "Inter-School Trophy", year: "2024", count_label: "Overall Trophy",
-    description: "Secured overall team championship trophy 3 years consecutively.", image_url: "/uploads/prsa_media_15.jpg", display_order: 3
+    description: "Secured overall team championship trophy 3 years consecutively.", image_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_15.jpg", display_order: 3
   }
 ];
 
@@ -196,7 +196,7 @@ const galleryItems = Array.from({ length: 15 }, (_, i) => {
     title: `PRSA Action Shot ${n}`,
     category,
     media_type: "image",
-    url: `/uploads/prsa_media_${num}.jpg`,
+    url: `https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_${num}.jpg`,
     caption: `High-speed training session at PRSA floodlit arena (${category})`,
     display_order: n
   };
@@ -206,17 +206,17 @@ const testimonials = [
   {
     name: "Meera Kulkarni", role_desc: "Parent of Cadet Skater (Verified Google Review)",
     quote: "Best skating academy in the region! My 5-year-old son started on quads with zero confidence. Coach Arjun and Pooja's patience transformed him in weeks. The track safety barriers gave us complete peace of mind.",
-    rating: 5, photo_url: "/uploads/prsa_media_07.jpg"
+    rating: 5, photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_07.jpg"
   },
   {
     name: "Sunil Ramaswamy", role_desc: "Parent of State Gold Medalist (Verified Google Review)",
     quote: "PRSA's speed training is unmatched. The transponder timing gates and corner crossover drills helped my daughter shave 1.2 seconds in the 500m sprint, winning gold at the RSFI State Championship.",
-    rating: 5, photo_url: "/uploads/prsa_media_09.jpg"
+    rating: 5, photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_09.jpg"
   },
   {
     name: "Rahul Bhasin", role_desc: "Adult Fitness & Speed Batch (Verified Google Review)",
     quote: "Joined the Adult Masters session after work. The synthetic banked rink is wonderful on the knees, equipment is top quality, and the coaching staff is thoroughly professional and encouraging.",
-    rating: 5, photo_url: "/uploads/prsa_media_12.jpg"
+    rating: 5, photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_12.jpg"
   }
 ];
 
@@ -226,14 +226,14 @@ const locations = [
     phone: "+91 98765 43210", schedule: "Morning: 6:00 AM – 9:30 AM • Evening: 5:00 PM – 8:30 PM",
     maps_url: "https://maps.google.com/?q=Professional+Roller+Skating+Academy+Electronic+City",
     description: "Banked synthetic track with floodlight illumination, practice safety rails & spectator stands.",
-    photo_url: "/uploads/prsa_media_10.jpg", display_order: 1
+    photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg", display_order: 1
   },
   {
     name: "PRSA West Compound (HSR Layout)", tag_label: "QUAD & SLALOM", address: "HSR Layout Sector 2, near Agara Lake Sports Complex, Bengaluru",
     phone: "+91 98765 43211", schedule: "Tue - Sun • 6:00 AM – 8:30 PM",
     maps_url: "https://maps.google.com/?q=PRSA+Skating+HSR+Layout",
     description: "Flat & Banked Track Combination + Cones Agility Zone for slalom and toddlers.",
-    photo_url: "/uploads/prsa_media_04.jpg", display_order: 2
+    photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_04.jpg", display_order: 2
   }
 ];
 

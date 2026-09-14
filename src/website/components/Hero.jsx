@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Camera, Star, ShieldCheck, Zap, ChevronLeft, ChevronRight, Play, Image as ImageIcon, Film } from 'lucide-react';
+import { mediaUrl } from '../../lib/media';
 
 export default function Hero({ content, settings }) {
   const badge = content.hero_badge || "⚡ OFFICIAL RSFI AFFILIATED ACADEMY • BENGALURU, KARNATAKA";
@@ -7,11 +8,11 @@ export default function Hero({ content, settings }) {
   const title1 = content.hero_title_1 || "UNLEASH SPEED.";
   const title2 = content.hero_title_2 || "MASTER THE RINK.";
   const description = content.hero_description || "Official RSFI roller skating training in Bangalore. From beginner balance & falling safety to podium medals at Ryan International, Viva Vibgyor, and State/National Championships.";
-  
+
   // Media Type Configuration
   const heroType = content.hero_type || 'video'; // Default to 'video' for dynamic hero background
-  const bgImage = content.hero_bg_image || "/uploads/prsa_media_10.jpg";
-  
+  const bgImage = content.hero_bg_image || mediaUrl('prsa_media_10.jpg');
+
   let videoUrl = content.hero_video_url;
   if (!videoUrl || videoUrl === 'SESSION_VIDEO') {
     try {
@@ -20,11 +21,11 @@ export default function Hero({ content, settings }) {
     } catch (e) {}
   }
   if (!videoUrl) {
-    videoUrl = "/uploads/create_a_video_for_my_sketing.mp4";
+    videoUrl = mediaUrl('create_a_video_for_my_sketing.mp4');
   }
-  
+
   // Slideshow URLs parsing
-  let slideshowUrls = ["/uploads/prsa_media_10.jpg", "/uploads/prsa_media_02.jpg", "/uploads/prsa_media_01.jpg"];
+  let slideshowUrls = [mediaUrl('prsa_media_10.jpg'), mediaUrl('prsa_media_02.jpg'), mediaUrl('prsa_media_01.jpg')];
   if (content.hero_slideshow_urls) {
     try {
       const parsed = JSON.parse(content.hero_slideshow_urls);

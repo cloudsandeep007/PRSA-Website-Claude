@@ -10,7 +10,7 @@ export default function AboutSection() {
           <div className="lg:col-span-6 relative group">
             <div className="relative overflow-hidden rounded-xl bg-surface-container-high aspect-[4/3] shadow-2xl border border-outline-variant/30">
               <img
-                src="/uploads/prsa_media_10.jpg"
+                src="https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg"
                 alt="PRSA Floodlit Synthetic Skating Arena at Night"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
@@ -49,7 +49,7 @@ export default function AboutSection() {
             {/* Inset Thumbnail */}
             <div className="hidden sm:block absolute -top-6 -right-6 w-48 h-36 rounded-lg overflow-hidden border-2 border-primary-container/40 shadow-2xl z-20">
               <img
-                src="/uploads/prsa_media_03.jpg"
+                src="https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_03.jpg"
                 alt="PRSA On-Rink Batch Coaching Session"
                 className="w-full h-full object-cover"
               />
