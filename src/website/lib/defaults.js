@@ -19,7 +19,7 @@ export const defaultSettings = {
 export const defaultContent = {
   hero_type: 'video',
   hero_badge: 'Official RSFI affiliated academy • Bengaluru, Karnataka',
-  hero_sub_badge: 'Electronic City • Neo Town • HSR Layout • Floodlit arena',
+  hero_sub_badge: 'Electronic City • Neo Town • Floodlit arena',
   hero_title_1: 'Unleash speed.',
   hero_title_2: 'Master the rink.',
   hero_description: 'Official RSFI roller skating training in Bangalore. From beginner balance and falling safety to podium medals at Ryan International, Viva Vibgyor, and State/National Championships.',
@@ -93,10 +93,6 @@ export const defaultLocations = [
     phone: '+91 98765 43210', schedule: 'Morning 6:00 – 9:30 AM • Evening 5:00 – 8:30 PM',
     maps_url: 'https://maps.google.com/?q=Professional+Roller+Skating+Academy+Electronic+City',
     description: 'Banked synthetic track with floodlight illumination, practice safety rails and spectator stands.', photo_url: media.rinkNight1 },
-  { id: 'l2', name: 'PRSA West Compound (HSR Layout)', tag_label: 'Quad & slalom', address: 'HSR Layout Sector 2, near Agara Lake Sports Complex, Bengaluru',
-    phone: '+91 98765 43211', schedule: 'Tue – Sun • 6:00 AM – 8:30 PM',
-    maps_url: 'https://maps.google.com/?q=PRSA+Skating+HSR+Layout',
-    description: 'Flat and banked track combination plus a cones agility zone for slalom and toddlers.', photo_url: media.sprintRoad },
 ];
 
 export const defaultFaqs = [

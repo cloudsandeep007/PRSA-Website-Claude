@@ -37,8 +37,8 @@ export default function AboutSection({ settings = {} }) {
             </h2>
             <div className="mt-8 space-y-5 t-lead max-w-xl" data-reveal style={{ '--reveal-delay': '160ms' }}>
               <p>
-                Professional Roller Skating Academy trains skaters across South Bengaluru — Electronic City, Neo Town and
-                HSR Layout — on a floodlit banked track and in weekend road sessions. We are affiliated with the Roller
+                Professional Roller Skating Academy trains skaters at its floodlit banked track in Neo Town, Electronic City,
+                South Bengaluru, and in weekend road sessions nearby. We are affiliated with the Roller
                 Skating Federation of India, so a child who starts here on quad skates has a clear route to state and
                 national competition if they want it.
               </p>

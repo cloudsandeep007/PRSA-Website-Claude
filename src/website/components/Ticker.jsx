@@ -3,7 +3,7 @@ import React from 'react';
 // Continuous cobalt band of the things a parent scans for first: where, who,
 // which disciplines. Duplicated once so the marquee loops seamlessly.
 export default function Ticker({ content = {} }) {
-  const raw = content.hero_sub_badge || 'Electronic City • Neo Town • HSR Layout • Floodlit arena';
+  const raw = content.hero_sub_badge || 'Electronic City • Neo Town • Floodlit arena';
   const items = raw.split(/[•·|]/).map(s => s.trim()).filter(Boolean);
   const fixed = ['RSFI affiliated', 'Quad skates', 'Inline speed', 'Freestyle slalom', 'Ages 4 to adult', 'Free trial class'];
   const line = [...items, ...fixed];

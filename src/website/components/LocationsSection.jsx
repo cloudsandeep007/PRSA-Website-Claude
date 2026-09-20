@@ -7,7 +7,7 @@ const FALLBACK_LOCATION = {
   id: 'hq',
   name: 'PRSA Floodlit Skating Arena',
   tag_label: 'Main venue',
-  address: 'Electronic City / Neo Town Corridor, Bengaluru, Karnataka 560100',
+  address: 'Neo Town, Electronic City, Bengaluru, Karnataka 560100',
   phone: '+91 98765 43210',
   schedule: 'Morning 6:00 – 9:30 AM · Evening 5:00 – 8:30 PM',
   maps_url: 'https://maps.google.com/?q=Professional+Roller+Skating+Academy+Electronic+City+Bengaluru',
@@ -30,7 +30,7 @@ export default function LocationsSection({ locations = [] }) {
         <SectionHeader
           eyebrow="Venues"
           title={<>Where we<br />train</>}
-          lead="Pick the venue closest to you. Both run morning and evening batches, and both have gear on site for trial sessions."
+          lead="Morning and evening batches run at the academy's own floodlit track in Neo Town, Electronic City. Skates and protective gear are available on site for trial sessions."
         />
 
         <div className="mt-14 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">

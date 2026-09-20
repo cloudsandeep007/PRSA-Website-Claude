@@ -79,7 +79,7 @@ const defaultContent = [
   { key: "hero_type", value: "video" },
   { key: "hero_video_url", value: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/create_a_video_for_my_sketing.mp4" },
   { key: "hero_badge", value: "⚡ OFFICIAL RSFI AFFILIATED ACADEMY • BENGALURU, KARNATAKA" },
-  { key: "hero_sub_badge", value: "ELECTRONIC CITY • NEO TOWN • HSR • FLOODLIT ARENA" },
+  { key: "hero_sub_badge", value: "ELECTRONIC CITY • NEO TOWN • FLOODLIT ARENA" },
   { key: "hero_title_1", value: "UNLEASH SPEED." },
   { key: "hero_title_2", value: "MASTER THE RINK." },
   { key: "hero_description", value: "Official RSFI roller skating training in Bangalore. From beginner balance & falling safety to podium medals at Ryan International, Viva Vibgyor, and State/National Championships." },
@@ -228,13 +228,6 @@ const locations = [
     description: "Banked synthetic track with floodlight illumination, practice safety rails & spectator stands.",
     photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg", display_order: 1
   },
-  {
-    name: "PRSA West Compound (HSR Layout)", tag_label: "QUAD & SLALOM", address: "HSR Layout Sector 2, near Agara Lake Sports Complex, Bengaluru",
-    phone: "+91 98765 43211", schedule: "Tue - Sun • 6:00 AM – 8:30 PM",
-    maps_url: "https://maps.google.com/?q=PRSA+Skating+HSR+Layout",
-    description: "Flat & Banked Track Combination + Cones Agility Zone for slalom and toddlers.",
-    photo_url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_04.jpg", display_order: 2
-  }
 ];
 
 const faqs = [
