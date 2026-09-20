@@ -8,6 +8,26 @@ export default {
   theme: {
     extend: {
       colors: {
+        // ── Public website palette ("Track & Podium") ─────────────────────
+        // chalk   – page background, warm-neutral like a dry concrete rink
+        // ink     – text and dark blocks
+        // cobalt  – brand blue, the painted racing-track colour
+        // race    – speed-suit yellow, used only for small accents
+        // night   – floodlit-night background for dark sections
+        // concrete– hairline rules and card borders on chalk
+        chalk: "#F3F2EE",
+        "chalk-2": "#EAE9E3",
+        ink: "#0C0D10",
+        "ink-2": "#16181D",
+        cobalt: "#1E3DFF",
+        "cobalt-deep": "#1530CC",
+        race: "#FFD60A",
+        night: "#0B1226",
+        "night-2": "#111A36",
+        concrete: "#D9D8D1",
+        smoke: "#6B6E76",
+
+        // ── Admin panel palette (Material-style tokens; unchanged) ────────
         "surface": "#051424",
         "surface-dim": "#051424",
         "surface-bright": "#2c3a4c",
@@ -47,6 +67,8 @@ export default {
         "DEFAULT": "0.125rem",
         "lg": "0.25rem",
         "xl": "0.5rem",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
         "full": "9999px"
       },
       spacing: {
@@ -62,6 +84,12 @@ export default {
         "space-2xl": "4rem"
       },
       fontFamily: {
+        // Public website
+        display: ["'Barlow Condensed'", "Impact", "sans-serif"],
+        body: ["Manrope", "system-ui", "sans-serif"],
+        mono: ["'IBM Plex Mono'", "ui-monospace", "monospace"],
+
+        // Admin panel (unchanged)
         "headline-xl": ["Space Grotesk", "sans-serif"],
         "headline-lg": ["Space Grotesk", "sans-serif"],
         "headline-md": ["Space Grotesk", "sans-serif"],
@@ -89,6 +117,39 @@ export default {
         "body-sm": ["0.875rem", { lineHeight: "1.5" }],
         "label-uppercase": ["0.75rem", { lineHeight: "1.2" }],
         "label-md": ["0.875rem", { lineHeight: "1.2" }]
+      },
+      maxWidth: {
+        site: "1440px"
+      },
+      boxShadow: {
+        card: "0 1px 2px rgba(12,13,16,0.04), 0 8px 24px -12px rgba(12,13,16,0.18)",
+        lift: "0 24px 48px -20px rgba(12,13,16,0.35)",
+        cobalt: "0 16px 40px -16px rgba(30,61,255,0.55)"
+      },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" }
+        },
+        "rise-in": {
+          "0%": { opacity: "0", transform: "translateY(28px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" }
+        },
+        "scroll-cue": {
+          "0%": { transform: "translateY(0)", opacity: "0" },
+          "30%": { opacity: "1" },
+          "100%": { transform: "translateY(14px)", opacity: "0" }
+        }
+      },
+      animation: {
+        marquee: "marquee 38s linear infinite",
+        "rise-in": "rise-in 0.9s cubic-bezier(0.22,1,0.36,1) both",
+        "fade-in": "fade-in 1.2s ease both",
+        "scroll-cue": "scroll-cue 1.8s ease-in-out infinite"
       }
     }
   },

@@ -1,60 +1,55 @@
 import React from 'react';
-import { Star, Quote, CheckCircle } from 'lucide-react';
+import { Star } from 'lucide-react';
+import SectionHeader from './ui/SectionHeader';
 
-export default function TestimonialsSection({ testimonials }) {
+function Stars({ n = 5 }) {
   return (
-    <section className="w-full py-space-2xl bg-surface-container-lowest">
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin">
-        <div className="text-center max-w-2xl mx-auto mb-space-2xl space-y-space-xs">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/10 border border-primary-container/30 text-primary font-label-uppercase text-[11px] font-bold">
-            <span className="text-[#FFB800]">★ 4.9 RATING</span>
-            <span>• GOOGLE BUSINESS REVIEWS</span>
-          </div>
-          <h2 className="font-headline-xl text-2xl sm:text-3xl md:text-4xl text-primary font-bold mt-1">
-            TRUSTED BY 850+ FAMILIES
-          </h2>
-          <p className="font-body-md text-body-md text-on-surface-variant">
-            Read genuine experiences from parents and competitive skaters training at Professional Roller Skating Academy.
+    <span className="inline-flex gap-0.5 text-race" aria-label={`${n} out of 5 stars`}>
+      {Array.from({ length: n }).map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
+    </span>
+  );
+}
+
+export default function TestimonialsSection({ testimonials = [] }) {
+  return (
+    <section className="bg-white py-20 sm:py-28 lg:py-36 border-t border-concrete">
+      <div className="container-site">
+        <SectionHeader
+          eyebrow="Parents & skaters"
+          title={<>What families<br />say about PRSA</>}
+          align="center"
+        >
+          <p className="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-ink/60">
+            <Stars /> 4.9 on Google · 240+ reviews
           </p>
-        </div>
+        </SectionHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-          {testimonials.map((test) => (
-            <div
-              key={test.id}
-              className="bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-md border border-outline-variant/20 relative"
-            >
-              <div className="space-y-space-sm">
-                <div className="flex text-[#FFB800] gap-0.5">
-                  {[...Array(test.rating || 5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
+        {testimonials.length === 0 ? (
+          <p className="mt-14 text-center text-ink/60">Reviews from PRSA families will appear here.</p>
+        ) : (
+          <div className="mt-14 grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6">
+            {testimonials.map((t, i) => (
+              <figure key={t.id || i} className="card p-7 sm:p-8 flex flex-col" data-reveal style={{ '--reveal-delay': `${i * 100}ms` }}>
+                <div className="flex items-start justify-between">
+                  <span className="font-display font-extrabold text-7xl leading-[0.6] text-cobalt select-none" aria-hidden="true">“</span>
+                  <Stars n={t.rating || 5} />
                 </div>
-                <p className="font-body-md text-body-md text-on-surface leading-relaxed italic text-sm">
-                  "{test.quote}"
-                </p>
-              </div>
-
-              <div className="mt-space-md pt-space-sm border-t border-outline-variant/20 flex items-center gap-space-sm">
-                {test.photo_url ? (
-                  <img
-                    src={test.photo_url}
-                    alt={test.name}
-                    className="w-10 h-10 rounded-full object-cover border border-primary-container/40"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center font-bold text-primary text-xs">
-                    {test.name.substring(0, 2).toUpperCase()}
+                <blockquote className="mt-4 text-base sm:text-[17px] leading-relaxed text-ink/85 flex-1">{t.quote}</blockquote>
+                <figcaption className="mt-7 pt-6 border-t border-concrete flex items-center gap-3">
+                  {t.photo_url ? (
+                    <img src={t.photo_url} alt="" className="w-11 h-11 rounded-full object-cover" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                  ) : (
+                    <span className="w-11 h-11 rounded-full bg-cobalt/10 text-cobalt flex items-center justify-center font-display font-bold text-lg">{(t.name || '?').slice(0, 2).toUpperCase()}</span>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold text-ink leading-tight">{t.name}</p>
+                    <p className="text-xs text-ink/55 mt-0.5">{t.role_desc}</p>
                   </div>
-                )}
-                <div>
-                  <span className="font-label-md text-label-md text-on-surface font-bold block text-sm">{test.name}</span>
-                  <span className="font-body-sm text-[11px] text-primary-container block">{test.role_desc}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

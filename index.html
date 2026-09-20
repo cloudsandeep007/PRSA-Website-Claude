@@ -4,33 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRSA — Professional Roller Skating Academy | Bengaluru</title>
+  <meta name="description" content="RSFI-affiliated roller skating academy in Bengaluru. Quad, inline speed and slalom coaching for kids from age 4 to national-level athletes. Book a free trial class." />
+  <meta name="theme-color" content="#0C0D10" />
+  <link rel="icon" type="image/png" href="/logo/prsa_logo.png" />
+  <link rel="apple-touch-icon" href="/logo/prsa_logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Public website type: Barlow Condensed (display) · Manrope (body) · IBM Plex Mono (data) -->
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- Admin panel type (unchanged) -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="preload" as="image" href="/media/hero-poster.webp" />
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      scroll-behavior: smooth;
       overscroll-behavior: none;
     }
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #051424;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1c2b3c;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #00f0ff;
-    }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #0C0D10; }
+    ::-webkit-scrollbar-thumb { background: #3a3d45; border-radius: 6px; border: 2px solid #0C0D10; }
+    ::-webkit-scrollbar-thumb:hover { background: #1E3DFF; }
   </style>
 </head>
-<body class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container">
+<body class="bg-surface font-body-md text-on-surface antialiased">
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

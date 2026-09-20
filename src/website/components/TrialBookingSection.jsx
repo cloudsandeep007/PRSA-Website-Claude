@@ -1,268 +1,182 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle2, ShieldAlert, Sparkles, UserCheck } from 'lucide-react';
+import { ArrowRight, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { media } from '../lib/media';
 
-export default function TrialBookingSection({ locations }) {
-  const [formData, setFormData] = useState({
+const DISCIPLINES = [
+  'Beginner Assessment (Tots & Kids 4–7)',
+  'Quad Skates (Basic & Recreational)',
+  'Inline Speed Skates (Competitive Track)',
+  'Artistic & Freestyle Slalom',
+  'Adult Fitness & Open Rink',
+];
+const EXPERIENCE = ['First timer', 'Can glide and turn', 'Has competed before'];
+
+const INCLUDED = [
+  'Skates, helmet, knee and elbow guards — fitted at the rink',
+  'A 45-minute session led by an RSFI-certified coach',
+  'The coach\'s batch recommendation before you leave',
+  'Parents stay trackside for the whole session',
+];
+
+function emptyForm(locations) {
+  return {
     athlete_name: '',
     age: '',
     parent_phone: '',
     email: '',
-    discipline: 'Beginner Assessment (Tots & Kids 4–7)',
-    location: locations.length > 0 ? locations[0].name : 'PRSA Main Banked Track Arena',
-    experience: 'First Timer',
-    message: ''
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    discipline: DISCIPLINES[0],
+    location: locations.length ? locations[0].name : 'PRSA Floodlit Skating Arena',
+    experience: EXPERIENCE[0],
+    message: '',
   };
+}
 
-  const handleSubmit = async (e) => {
+export default function TrialBookingSection({ locations = [] }) {
+  const [form, setForm] = useState(() => emptyForm(locations));
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+
+  const set = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+  async function submit(e) {
     e.preventDefault();
     setLoading(true);
-    setErrorMsg('');
-
+    setError('');
     try {
       const res = await fetch('/api/trial-bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(form),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setSubmitted(true);
-        setFormData({
-          athlete_name: '',
-          age: '',
-          parent_phone: '',
-          email: '',
-          discipline: 'Beginner Assessment (Tots & Kids 4–7)',
-          location: locations.length > 0 ? locations[0].name : 'PRSA Main Banked Track Arena',
-          experience: 'First Timer',
-          message: ''
-        });
+        setDone(true);
+        setForm(emptyForm(locations));
       } else {
-        setErrorMsg(data.error || 'Failed to submit booking request.');
+        setError(data.error || 'We could not save your booking. Please try again or message us on WhatsApp.');
       }
     } catch (err) {
-      setErrorMsg('Network error. Please check internet connection.');
+      setError('No connection. Check your internet and try again.');
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <section className="w-full py-space-2xl bg-surface relative" id="trial">
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin">
-        <div className="bg-surface-container-low rounded-2xl p-space-lg md:p-space-xl shadow-2xl relative overflow-hidden border border-outline-variant/30">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
-            {/* Booking Left Pitch */}
-            <div className="lg:col-span-5 space-y-space-md flex flex-col justify-between">
-              <div className="space-y-space-sm">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/15 text-primary font-label-uppercase text-[11px] font-bold">
-                  <span>RSFI ACCREDITED ASSESSMENT</span>
-                </div>
-                <h3 className="font-headline-xl text-2xl sm:text-3xl md:text-4xl text-primary font-bold">
-                  TEST YOUR STRIDE WITH A CHIEF COACH.
-                </h3>
-                <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                  Experience PRSA's proven training methodology first-hand. Every complimentary trial class includes boot fitting, track safety briefing, and personalized squad placement recommendations.
-                </p>
-              </div>
+    <section id="trial" className="relative bg-night text-white py-20 sm:py-28 lg:py-36 overflow-hidden on-dark">
+      <div className="absolute inset-0 floodlight pointer-events-none" aria-hidden="true" />
+      <div className="container-site relative">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Pitch */}
+          <div className="lg:col-span-5">
+            <span className="t-eyebrow text-race inline-flex items-center gap-2" data-reveal>
+              <span className="w-5 h-[2px] bg-race" /> Free trial class
+            </span>
+            <h2 className="t-h2 mt-5 text-white" data-reveal style={{ '--reveal-delay': '80ms' }}>
+              Try a class.<br />No skates needed.
+            </h2>
+            <p className="mt-6 text-base sm:text-lg leading-relaxed text-white/70 max-w-lg" data-reveal style={{ '--reveal-delay': '160ms' }}>
+              Fill in the form and the academy will call you within two working hours to fix a slot. The trial is free
+              and there is no obligation to enrol.
+            </p>
 
-              <div className="space-y-space-sm pt-space-sm">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-primary-container/20 text-primary flex items-center justify-center font-bold text-xs">01</span>
-                  <span className="font-body-sm text-body-sm text-on-surface font-medium">Free Equipment Provided (Skates + Helmet + Knee Guards)</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-primary-container/20 text-primary flex items-center justify-center font-bold text-xs">02</span>
-                  <span className="font-body-sm text-body-sm text-on-surface font-medium">1-on-1 kinetic diagnostic with an RSFI certified coach</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-primary-container/20 text-primary flex items-center justify-center font-bold text-xs">03</span>
-                  <span className="font-body-sm text-body-sm text-on-surface font-medium">Safety-barrier banked track tour for parents & guardians</span>
-                </div>
-              </div>
+            <ul className="mt-8 space-y-3" data-reveal style={{ '--reveal-delay': '240ms' }}>
+              {INCLUDED.map(t => (
+                <li key={t} className="flex gap-3 items-start text-sm sm:text-[15px] text-white/80">
+                  <CheckCircle2 className="w-5 h-5 text-race shrink-0 mt-0.5" />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
 
-              <div className="p-space-sm rounded-lg bg-surface-container-lowest/60 text-xs text-outline flex items-center gap-2 border border-outline-variant/20">
-                <UserCheck className="w-4 h-4 text-primary-container shrink-0" />
-                <span>100% Free Trial • Skates & Protective Pads Provided Free on Rink</span>
-              </div>
-            </div>
+            <figure className="mt-10 hidden lg:flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4" data-reveal style={{ '--reveal-delay': '320ms' }}>
+              <img src={media.coachSquare} alt="Head coach fitting a skate for a young student" className="w-20 h-20 rounded-xl object-cover" loading="lazy" />
+              <figcaption className="text-sm text-white/70 leading-relaxed">
+                Every trial is taken by a lead coach — the same coach who will run your child's batch.
+              </figcaption>
+            </figure>
+          </div>
 
-            {/* Booking Right Interactive Form */}
-            <div className="lg:col-span-7 bg-surface-container p-space-lg rounded-xl shadow-lg border border-outline-variant/20">
-              {submitted ? (
-                <div className="p-8 text-center space-y-4 animate-in zoom-in duration-300">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-10 h-10" />
-                  </div>
-                  <h4 className="text-2xl font-bold text-primary">TRIAL BOOKING CONFIRMED!</h4>
-                  <p className="text-sm text-on-surface-variant max-w-md mx-auto leading-relaxed">
-                    🎉 Thank you! PRSA's coaching concierge will call you within 2 business hours with batch slot confirmation and complimentary skate sizing.
+          {/* Form */}
+          <div className="lg:col-span-7" data-reveal style={{ '--reveal-delay': '120ms' }}>
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-6 sm:p-8 lg:p-10">
+              {done ? (
+                <div className="py-10 text-center animate-rise-in">
+                  <span className="w-16 h-16 rounded-full bg-race text-ink flex items-center justify-center mx-auto"><CheckCircle2 className="w-8 h-8" /></span>
+                  <h3 className="t-display text-5xl mt-6">Booked.</h3>
+                  <p className="mt-4 text-white/70 max-w-md mx-auto leading-relaxed">
+                    Thanks — the academy will call you within two working hours to confirm a slot and skate size.
                   </p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="px-6 py-2.5 rounded-full bg-primary-container text-on-primary-container font-bold text-xs shadow-lg hover:shadow-cyan-500/50"
-                  >
-                    Book Another Trial
-                  </button>
+                  <button onClick={() => setDone(false)} className="btn-ghost-light mt-8">Book another trial</button>
                 </div>
               ) : (
-                <form className="space-y-space-md" onSubmit={handleSubmit}>
-                  {errorMsg && (
-                    <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 text-xs flex items-center gap-2">
-                      <ShieldAlert className="w-4 h-4 shrink-0" />
-                      <span>{errorMsg}</span>
+                <form onSubmit={submit} className="space-y-5" noValidate={false}>
+                  {error && (
+                    <div role="alert" className="rounded-xl border border-race/40 bg-race/10 text-race text-sm p-3.5 flex gap-2.5 items-start">
+                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> <span>{error}</span>
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-1.5 font-bold text-[10px]">
-                        FULL NAME OF ATHLETE *
-                      </label>
-                      <input
-                        type="text"
-                        name="athlete_name"
-                        value={formData.athlete_name}
-                        onChange={handleChange}
-                        required
-                        placeholder="e.g. Leo Sharma"
-                        className="w-full bg-surface-container-high text-on-surface placeholder:text-outline px-4 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-container font-body-sm transition-all border border-outline-variant/30 text-sm"
-                      />
+                      <label htmlFor="athlete_name" className="field-label">Skater's name</label>
+                      <input id="athlete_name" name="athlete_name" value={form.athlete_name} onChange={set} required placeholder="e.g. Aarav Sharma" className="field" autoComplete="name" />
                     </div>
                     <div>
-                      <label className="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-1.5 font-bold text-[10px]">
-                        ATHLETE AGE *
-                      </label>
-                      <input
-                        type="number"
-                        name="age"
-                        value={formData.age}
-                        onChange={handleChange}
-                        required
-                        min="4"
-                        max="75"
-                        placeholder="e.g. 7"
-                        className="w-full bg-surface-container-high text-on-surface placeholder:text-outline px-4 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-container font-body-sm transition-all border border-outline-variant/30 text-sm"
-                      />
+                      <label htmlFor="age" className="field-label">Skater's age</label>
+                      <input id="age" name="age" type="number" min="4" max="75" value={form.age} onChange={set} required placeholder="e.g. 7" className="field" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-1.5 font-bold text-[10px]">
-                        PARENT / GUARDIAN PHONE *
-                      </label>
-                      <input
-                        type="tel"
-                        name="parent_phone"
-                        value={formData.parent_phone}
-                        onChange={handleChange}
-                        required
-                        placeholder="+91 98765 43210"
-                        className="w-full bg-surface-container-high text-on-surface placeholder:text-outline px-4 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-container font-body-sm transition-all border border-outline-variant/30 text-sm"
-                      />
+                      <label htmlFor="parent_phone" className="field-label">Parent's phone</label>
+                      <input id="parent_phone" name="parent_phone" type="tel" value={form.parent_phone} onChange={set} required placeholder="+91 98765 43210" className="field" autoComplete="tel" />
                     </div>
                     <div>
-                      <label className="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-1.5 font-bold text-[10px]">
-                        EMAIL ADDRESS *
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        placeholder="parent@prsaroller.com"
-                        className="w-full bg-surface-container-high text-on-surface placeholder:text-outline px-4 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-container font-body-sm transition-all border border-outline-variant/30 text-sm"
-                      />
+                      <label htmlFor="email" className="field-label">Email</label>
+                      <input id="email" name="email" type="email" value={form.email} onChange={set} required placeholder="you@example.com" className="field" autoComplete="email" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-1.5 font-bold text-[10px]">
-                        SELECT DISCIPLINE
-                      </label>
-                      <select
-                        name="discipline"
-                        value={formData.discipline}
-                        onChange={handleChange}
-                        className="w-full bg-surface-container-high text-on-surface px-4 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-container font-body-sm transition-all border border-outline-variant/30 text-sm"
-                      >
-                        <option>Beginner Assessment (Tots & Kids 4–7)</option>
-                        <option>Quad Skates (Basic & Recreational)</option>
-                        <option>Inline Speed Skates (Competitive Track)</option>
-                        <option>Artistic & Freestyle Slalom</option>
-                        <option>Adult Fitness & Open Rink</option>
+                      <label htmlFor="discipline" className="field-label">Program</label>
+                      <select id="discipline" name="discipline" value={form.discipline} onChange={set} className="field appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-no-repeat bg-[right_1rem_center] pr-10">
+                        {DISCIPLINES.map(d => <option key={d} className="text-ink">{d}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-1.5 font-bold text-[10px]">
-                        PREFERRED RINK LOCATION
-                      </label>
-                      <select
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className="w-full bg-surface-container-high text-on-surface px-4 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-container font-body-sm transition-all border border-outline-variant/30 text-sm"
-                      >
-                        {locations.map(loc => (
-                          <option key={loc.id} value={loc.name}>{loc.name}</option>
-                        ))}
+                      <label htmlFor="location" className="field-label">Venue</label>
+                      <select id="location" name="location" value={form.location} onChange={set} className="field appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-no-repeat bg-[right_1rem_center] pr-10">
+                        {(locations.length ? locations : [{ id: 0, name: form.location }]).map(l => <option key={l.id} value={l.name} className="text-ink">{l.name}</option>)}
                       </select>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-1.5 font-bold text-[10px]">
-                      CURRENT SKATING EXPERIENCE
-                    </label>
+                  <fieldset>
+                    <legend className="field-label">Skating experience</legend>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      {['First Timer', 'Can Glide / Turn', 'Past Medalist'].map(exp => (
-                        <label
-                          key={exp}
-                          className={`p-2.5 rounded-lg flex items-center gap-2 cursor-pointer transition-colors border text-xs ${
-                            formData.experience === exp
-                              ? 'bg-primary-container/20 border-primary-container text-primary font-bold'
-                              : 'bg-surface-container-high border-outline-variant/20 text-on-surface hover:bg-surface-container-highest'
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="experience"
-                            value={exp}
-                            checked={formData.experience === exp}
-                            onChange={handleChange}
-                            className="text-primary-container"
-                          />
-                          <span>{exp}</span>
+                      {EXPERIENCE.map(x => (
+                        <label key={x} className={`rounded-xl border px-4 py-3 text-sm cursor-pointer transition-colors flex items-center gap-2.5 ${form.experience === x ? 'bg-race text-ink border-race font-semibold' : 'border-white/15 text-white/75 hover:border-white/40'}`}>
+                          <input type="radio" name="experience" value={x} checked={form.experience === x} onChange={set} className="sr-only" />
+                          <span className={`w-2 h-2 rounded-full ${form.experience === x ? 'bg-ink' : 'bg-white/30'}`} aria-hidden="true" />
+                          {x}
                         </label>
                       ))}
                     </div>
+                  </fieldset>
+
+                  <div>
+                    <label htmlFor="message" className="field-label">Anything the coach should know <span className="normal-case tracking-normal text-white/35">(optional)</span></label>
+                    <textarea id="message" name="message" value={form.message} onChange={set} rows={3} placeholder="Preferred days, past injuries, a sibling who also wants to try…" className="field resize-none" />
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-primary-container text-on-primary-container font-label-uppercase text-label-uppercase tracking-widest py-4 rounded-lg font-bold shadow-[0_0_25px_rgba(0,240,255,0.4)] hover:shadow-[0_0_35px_rgba(0,240,255,0.6)] transition-all flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <span>Submitting...</span>
-                    ) : (
-                      <>
-                        <span>CONFIRM FREE TRIAL CLASS NOW</span>
-                        <Send className="w-4 h-4" />
-                      </>
-                    )}
+                  <button type="submit" disabled={loading} className="btn-race w-full !py-4 text-[15px] disabled:opacity-60 disabled:hover:translate-y-0">
+                    {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending…</> : <>Book my free trial <ArrowRight className="w-4 h-4" /></>}
                   </button>
+                  <p className="font-mono text-[11px] text-white/40 text-center tracking-wider">No payment. No obligation. We'll call to confirm.</p>
                 </form>
               )}
             </div>

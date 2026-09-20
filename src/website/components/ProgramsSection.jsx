@@ -1,165 +1,126 @@
-import React, { useState } from 'react';
-import { Sparkles, ArrowRight, Clock, Users, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ArrowUpRight, X, Clock, CalendarRange } from 'lucide-react';
+import SectionHeader from './ui/SectionHeader';
+import { media } from '../lib/media';
 
-export default function ProgramsSection({ programs }) {
-  const [selectedFilter, setSelectedFilter] = useState('All');
-  const [activeModalProgram, setActiveModalProgram] = useState(null);
+const FILTERS = ['All', 'Quad Skates', 'Inline Speed'];
+const FALLBACK_IMAGES = [media.warmupPark, media.rinkSession, media.sprintRoad, media.squadRoad, media.coachDrill, media.rinkNight2];
 
-  const filterOptions = ['All', 'Quad Skates', 'Inline Speed'];
+function matchesFilter(p, filter) {
+  if (filter === 'All') return true;
+  const hay = `${p.name || ''} ${p.level || ''}`;
+  if (filter === 'Quad Skates') return /quad|tots|foundation/i.test(hay);
+  if (filter === 'Inline Speed') return /inline|speed|rsfi|velocity/i.test(hay);
+  return true;
+}
 
-  const filteredPrograms = programs.filter(p => {
-    if (selectedFilter === 'All') return true;
-    if (selectedFilter === 'Quad Skates') return p.name.includes('Quad') || p.name.includes('Tots') || p.level.includes('Foundational');
-    if (selectedFilter === 'Inline Speed') return p.name.includes('Inline') || p.name.includes('Speed') || p.name.includes('RSFI');
-    return true;
-  });
+export default function ProgramsSection({ programs = [] }) {
+  const [filter, setFilter] = useState('All');
+  const [active, setActive] = useState(null);
+
+  const shown = programs.filter(p => matchesFilter(p, filter));
+
+  // Close the modal with Escape and lock scroll while it is open
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e) => e.key === 'Escape' && setActive(null);
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [active]);
 
   return (
-    <section className="w-full py-space-2xl bg-surface-container-lowest relative" id="programs">
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-xl gap-space-md">
-          <div>
-            <span className="font-label-uppercase text-label-uppercase tracking-widest text-primary-container font-bold text-[11px]">
-              ACADEMY DISCIPLINES
-            </span>
-            <h2 className="font-headline-xl text-2xl sm:text-3xl md:text-4xl text-primary font-bold mt-1">
-              FIND YOUR PERFECT PROGRAM
-            </h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-2 max-w-xl">
-              Tailored curriculums from ages 4 to adults across Quad Skates, Inline Speed, and Freestyle Slalom. Certified RSFI progression with safe student-to-coach ratios.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-on-surface-variant font-label-uppercase text-xs font-bold">Filter:</span>
-            {filterOptions.map(opt => (
-              <button
-                key={opt}
-                onClick={() => setSelectedFilter(opt)}
-                className={`px-3.5 py-1.5 rounded-full font-label-uppercase text-[11px] font-bold transition-all ${
-                  selectedFilter === opt
-                    ? 'bg-primary text-on-primary shadow-sm'
-                    : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
-                }`}
-              >
-                {opt}
+    <section id="programs" className="bg-white py-20 sm:py-28 lg:py-36 border-t border-concrete">
+      <div className="container-site">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+          <SectionHeader
+            eyebrow="Programs"
+            title={<>Find the right<br />batch for your skater</>}
+            lead="Six programs from age 4 to adult. Every skater starts with a free assessment so the coach can place them where they will progress fastest."
+          />
+          <div className="flex flex-wrap gap-2" data-reveal role="tablist" aria-label="Filter programs">
+            {FILTERS.map(f => (
+              <button key={f} role="tab" aria-selected={filter === f} onClick={() => setFilter(f)} className={`chip-filter ${filter === f ? 'is-active' : ''}`}>
+                {f}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Program Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
-          {filteredPrograms.map((prog) => (
-            <div
-              key={prog.id}
-              className="bg-surface-container-low rounded-xl p-space-lg flex flex-col justify-between hover:bg-surface-container transition-all group shadow-md hover:shadow-2xl border border-outline-variant/20 relative overflow-hidden"
-            >
-              <div className="space-y-space-md">
-                <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full bg-surface-container-highest font-label-uppercase text-[10px] text-primary font-bold">
-                    {prog.age_group || "ALL AGES"}
-                  </span>
-                  <span className="text-xs text-primary-container font-semibold">{prog.level}</span>
+        {shown.length === 0 ? (
+          <p className="mt-14 text-ink/60">No programs in this category yet — try another filter, or book a trial and we'll recommend one.</p>
+        ) : (
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-6">
+            {shown.map((p, i) => (
+              <article
+                key={p.id || i}
+                className="card overflow-hidden group flex flex-col cursor-pointer hover:shadow-lift hover:-translate-y-1 transition-all duration-500"
+                onClick={() => setActive(p)}
+                data-reveal
+                style={{ '--reveal-delay': `${(i % 3) * 90}ms` }}
+              >
+                <div className="relative aspect-[4/3] overflow-hidden bg-chalk-2">
+                  <img
+                    src={p.image_url || FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]}
+                    alt={p.name}
+                    className="img-zoom"
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]; }}
+                  />
+                  <span className="absolute top-3 left-3 chip bg-white/90 text-ink backdrop-blur">{p.age_group || 'All ages'}</span>
                 </div>
 
-                {prog.image_url && (
-                  <div className="w-full h-44 rounded-lg overflow-hidden border border-outline-variant/30">
-                    <img
-                      src={prog.image_url}
-                      alt={prog.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                <div className="p-6 flex flex-col flex-1">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-cobalt">{p.level}</span>
+                  <h3 className="font-display font-bold uppercase text-3xl leading-[0.95] mt-2 text-ink">{p.name}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-ink/65 line-clamp-3">{p.short_desc}</p>
+
+                  <div className="mt-auto pt-6 flex items-center justify-between gap-4">
+                    <span className="font-mono text-xs text-ink/60 inline-flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5" /> {p.schedule}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-ink group-hover:text-cobalt transition-colors">
+                      Details <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </span>
                   </div>
-                )}
-
-                <div>
-                  <h3 className="font-headline-md text-headline-md text-primary font-bold group-hover:text-primary-container transition-colors">
-                    {prog.name}
-                  </h3>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant mt-2 line-clamp-3">
-                    {prog.short_desc}
-                  </p>
                 </div>
-              </div>
-
-              <div className="pt-space-lg mt-space-md border-t border-outline-variant/20 flex items-center justify-between">
-                <div>
-                  <span className="font-label-uppercase text-[10px] text-outline block">SESSIONS</span>
-                  <span className="font-label-md text-label-md text-on-surface font-semibold text-xs">{prog.schedule}</span>
-                </div>
-                
-                <button
-                  onClick={() => setActiveModalProgram(prog)}
-                  className="px-4 py-2 rounded-full bg-surface-container-highest text-primary font-label-uppercase text-[11px] font-bold hover:bg-primary hover:text-on-primary transition-all flex items-center gap-1"
-                >
-                  <span>VIEW MODULE</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Program Detail Modal */}
-      {activeModalProgram && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-surface-container-low border border-outline-variant/30 rounded-2xl max-w-2xl w-full p-space-lg space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setActiveModalProgram(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-surface-container-high text-on-surface hover:text-primary transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-primary-container/20 text-primary-container text-xs font-bold">
-                {activeModalProgram.age_group}
-              </span>
-              <span className="text-xs text-secondary font-bold">{activeModalProgram.level}</span>
-            </div>
-
-            <h3 className="text-2xl font-bold text-primary">{activeModalProgram.name}</h3>
-
-            {activeModalProgram.image_url && (
-              <img
-                src={activeModalProgram.image_url}
-                alt={activeModalProgram.name}
-                className="w-full h-56 object-cover rounded-xl border border-outline-variant/30"
-              />
-            )}
-
-            <p className="text-on-surface-variant text-sm leading-relaxed">
-              {activeModalProgram.full_desc || activeModalProgram.short_desc}
-            </p>
-
-            <div className="grid grid-cols-2 gap-3 bg-surface-container p-3 rounded-xl border border-outline-variant/20 text-xs">
-              <div>
-                <span className="text-outline block">TRAINING SCHEDULE</span>
-                <span className="text-on-surface font-semibold">{activeModalProgram.schedule}</span>
-              </div>
-              <div>
-                <span className="text-outline block">MODULE DURATION</span>
-                <span className="text-on-surface font-semibold">{activeModalProgram.duration}</span>
-              </div>
-            </div>
-
-            <div className="pt-2 flex justify-end gap-3">
-              <button
-                onClick={() => setActiveModalProgram(null)}
-                className="px-4 py-2 rounded-full bg-surface-container-high text-on-surface font-bold text-xs hover:bg-surface-container-highest"
-              >
-                Close
+      {/* Detail modal */}
+      {active && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-ink/70 backdrop-blur-sm animate-fade-in" onClick={() => setActive(null)} role="dialog" aria-modal="true" aria-label={active.name}>
+          <div className="bg-white w-full sm:max-w-2xl rounded-t-3xl sm:rounded-3xl overflow-hidden max-h-[92vh] overflow-y-auto animate-rise-in" onClick={(e) => e.stopPropagation()}>
+            <div className="relative aspect-[16/9] bg-chalk-2">
+              <img src={active.image_url || media.warmupPark} alt={active.name} className="w-full h-full object-cover" />
+              <button onClick={() => setActive(null)} className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white text-ink flex items-center justify-center hover:bg-ink hover:text-white transition-colors" aria-label="Close">
+                <X className="w-5 h-5" />
               </button>
-              <a
-                href="#trial"
-                onClick={() => setActiveModalProgram(null)}
-                className="px-6 py-2 rounded-full bg-primary-container text-on-primary-container font-bold text-xs shadow-lg hover:shadow-cyan-500/50"
-              >
-                Enroll in Free Trial
-              </a>
+              <span className="absolute bottom-4 left-4 chip bg-race text-ink">{active.age_group}</span>
+            </div>
+            <div className="p-6 sm:p-8">
+              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-cobalt">{active.level}</span>
+              <h3 className="t-display text-4xl sm:text-5xl mt-2 text-ink">{active.name}</h3>
+              <p className="mt-5 text-base leading-relaxed text-ink/70">{active.full_desc || active.short_desc}</p>
+
+              <dl className="mt-6 grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-chalk p-4">
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/50 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Sessions</dt>
+                  <dd className="mt-1.5 font-semibold text-ink">{active.schedule || '—'}</dd>
+                </div>
+                <div className="rounded-xl bg-chalk p-4">
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/50 flex items-center gap-1.5"><CalendarRange className="w-3.5 h-3.5" /> Duration</dt>
+                  <dd className="mt-1.5 font-semibold text-ink">{active.duration || '—'}</dd>
+                </div>
+              </dl>
+
+              <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                <a href="#trial" onClick={() => setActive(null)} className="btn-cobalt flex-1">Book a free trial for this program</a>
+                <button onClick={() => setActive(null)} className="btn-ghost">Close</button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,125 +1,112 @@
-import React, { useState } from 'react';
-import { Camera, X, Play, ZoomIn } from 'lucide-react';
-
-const defaultGallery = [
-  { id: 1, title: "Speed Squad Night Practice", category: "Inline Speed", url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_10.jpg", fallback_url: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?q=80&w=800&auto=format&fit=crop", caption: "3000W Floodlit Arena • Banked Synthetic Track" },
-  { id: 2, title: "Tots Quad Balance Session", category: "Quad Skates", url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_03.jpg", fallback_url: "https://images.unsplash.com/photo-1517649763962-0c623266010b?q=80&w=800&auto=format&fit=crop", caption: "Grassroots Foundation • Ages 4-7" },
-  { id: 3, title: "RSFI State Medal Ceremony", category: "Events", url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_01.jpg", fallback_url: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800&auto=format&fit=crop", caption: "State Championship Podium Winners" },
-  { id: 4, title: "110mm Inline Sprint Drills", category: "Inline Speed", url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_02.jpg", fallback_url: "https://images.unsplash.com/photo-1565992441121-4367c2967103?q=80&w=800&auto=format&fit=crop", caption: "High-Velocity Corner Crossovers" },
-  { id: 5, title: "Artistic Slalom Cone Maneuver", category: "Events", url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_05.jpg", fallback_url: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=800&auto=format&fit=crop", caption: "Freestyle Slalom & Rocker Frames" },
-  { id: 6, title: "Inter-School Trophy Presentation", category: "Events", url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_11.jpg", fallback_url: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop", caption: "Overall Team Trophy Champions" },
-  { id: 7, title: "Quad Track Sprints", category: "Quad Skates", url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_06.jpg", fallback_url: "https://images.unsplash.com/photo-1517649763962-0c623266010b?q=80&w=800&auto=format&fit=crop", caption: "Safety Guard Rail Perimeter" },
-  { id: 8, title: "Digital Lap Timing Telemetry", category: "Inline Speed", url: "https://obzdkejxulvlpxiihvzj.supabase.co/storage/v1/object/public/media/prsa_media_13.jpg", fallback_url: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?q=80&w=800&auto=format&fit=crop", caption: "RSFI Transponder Lap Tracking" }
-];
+import React, { useEffect, useMemo, useState } from 'react';
+import { X, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import SectionHeader from './ui/SectionHeader';
+import { defaultGallery, media } from '../lib/media';
 
 export default function GallerySection({ gallery = [] }) {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [activeLightbox, setActiveLightbox] = useState(null);
+  const items = gallery.length ? gallery : defaultGallery;
+  const categories = useMemo(() => ['All', ...Array.from(new Set(items.map(g => g.category).filter(Boolean)))], [items]);
+  const [category, setCategory] = useState('All');
+  const [index, setIndex] = useState(null); // index into `shown`
 
-  const displayGallery = gallery && gallery.length > 0 ? gallery : defaultGallery;
-  const categories = ['All', 'Quad Skates', 'Inline Speed', 'Events'];
+  const shown = items.filter(g => category === 'All' || g.category === category);
 
-  const filteredGallery = displayGallery.filter(g => {
-    if (selectedCategory === 'All') return true;
-    return g.category === selectedCategory || (g.title && g.title.includes(selectedCategory));
-  });
+  const close = () => setIndex(null);
+  const step = (d) => setIndex(i => (i + d + shown.length) % shown.length);
+
+  useEffect(() => {
+    if (index === null) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowRight') step(1);
+      if (e.key === 'ArrowLeft') step(-1);
+    };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, shown.length]);
+
+  const current = index !== null ? shown[index] : null;
+  const isVideo = (g) => g?.media_type === 'video' || /\.(mp4|webm|mov)(\?|$)/i.test(g?.url || '');
 
   return (
-    <section className="w-full py-space-2xl bg-surface relative" id="gallery">
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-xl gap-space-md">
-          <div>
-            <span className="font-label-uppercase text-label-uppercase tracking-widest text-primary-container font-bold text-[11px]">
-              REAL RINK ACTION
-            </span>
-            <h2 className="font-headline-xl text-2xl sm:text-3xl md:text-4xl text-primary font-bold mt-1">
-              PRSA MEDIA GALLERY
-            </h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-2 max-w-xl text-xs sm:text-sm">
-              High-resolution action photography and video clips captured at our dedicated floodlit speed rink and championship meets.
-            </p>
-          </div>
-
-          {/* Filter Chips */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full font-label-uppercase text-[11px] font-bold transition-all ${
-                  selectedCategory === cat
-                    ? 'bg-primary-container text-on-primary-container shadow-md'
-                    : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
-                }`}
-              >
-                {cat}
-              </button>
+    <section id="gallery" className="bg-white py-20 sm:py-28 lg:py-36 border-t border-concrete">
+      <div className="container-site">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+          <SectionHeader
+            eyebrow="Gallery"
+            title={<>From the track<br />and the road</>}
+            lead="Sessions, sprints and podiums, photographed at our own venues and at the championships PRSA skaters attend."
+          />
+          <div className="flex flex-wrap gap-2" data-reveal role="tablist" aria-label="Filter gallery">
+            {categories.map(c => (
+              <button key={c} role="tab" aria-selected={category === c} onClick={() => { setCategory(c); setIndex(null); }} className={`chip-filter ${category === c ? 'is-active' : ''}`}>{c}</button>
             ))}
           </div>
         </div>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-space-md">
-          {filteredGallery.map((item, idx) => {
-            const fallbackImg = defaultGallery[idx % defaultGallery.length]?.fallback_url || "https://images.unsplash.com/photo-1547447134-cd3f5c716030?q=80&w=800&auto=format&fit=crop";
-            const mediaUrl = item.url || fallbackImg;
-
+        {/* Bento grid: every fifth tile is a 2×2 feature, so the wall keeps a
+            rhythm no matter how many photos the CMS holds. */}
+        <div className="mt-14 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 [grid-auto-flow:dense]">
+          {shown.map((g, i) => {
+            const featured = i % 5 === 0;
             return (
-              <div
-                key={item.id || idx}
-                onClick={() => setActiveLightbox({ ...item, url: mediaUrl })}
-                className="relative aspect-[4/3] rounded-xl overflow-hidden bg-surface-container-high border border-outline-variant/30 group cursor-pointer shadow-md hover:border-primary-container transition-all"
+              <button
+                key={g.id || i}
+                onClick={() => setIndex(i)}
+                className={`group relative rounded-2xl overflow-hidden bg-chalk-2 text-left focus-visible:outline-cobalt aspect-[4/3] ${featured ? 'col-span-2 row-span-2' : ''}`}
+                data-reveal
+                style={{ '--reveal-delay': `${(i % 4) * 70}ms` }}
+                aria-label={`Open ${g.title || 'photo'}`}
               >
-                <img
-                  src={mediaUrl}
-                  alt={item.title || "PRSA Gallery Photo"}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = fallbackImg;
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity p-2.5 sm:p-3 flex flex-col justify-end">
-                  <span className="text-[11px] sm:text-xs text-primary font-bold truncate">{item.title}</span>
-                  {item.caption && (
-                    <span className="text-[9px] sm:text-[10px] text-on-surface-variant line-clamp-1">{item.caption}</span>
-                  )}
+                {isVideo(g) ? (
+                  <video src={g.url} muted playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  <img
+                    src={g.url}
+                    alt={g.title || 'PRSA gallery photo'}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = media.rinkSession; }}
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 p-4 flex flex-col justify-end text-white">
+                  <span className="font-display font-bold uppercase text-xl leading-none">{g.title}</span>
+                  {g.caption && <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/70 mt-1.5 line-clamp-1">{g.caption}</span>}
                 </div>
-                <div className="absolute top-2 right-2 p-1.5 rounded-full bg-surface-container-lowest/80 text-primary-container opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </div>
-              </div>
+                {isVideo(g) && (
+                  <span className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 text-ink flex items-center justify-center"><Play className="w-4 h-4 ml-0.5" /></span>
+                )}
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* Lightbox Modal */}
-      {activeLightbox && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
-          <div className="relative max-w-4xl w-full p-2 space-y-2">
-            <button
-              onClick={() => setActiveLightbox(null)}
-              className="absolute -top-12 right-0 p-2 rounded-full bg-surface-container-high text-white hover:text-primary"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            <img
-              src={activeLightbox.url}
-              alt={activeLightbox.title}
-              className="max-h-[80vh] w-auto mx-auto object-contain rounded-xl border border-outline-variant/30 shadow-2xl"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://images.unsplash.com/photo-1547447134-cd3f5c716030?q=80&w=800&auto=format&fit=crop";
-              }}
-            />
-
-            <div className="text-center space-y-1 pt-2">
-              <h4 className="text-base sm:text-lg font-bold text-primary">{activeLightbox.title}</h4>
-              <p className="text-xs text-on-surface-variant">{activeLightbox.caption}</p>
-            </div>
+      {/* Lightbox */}
+      {current && (
+        <div className="fixed inset-0 z-[60] bg-ink/95 backdrop-blur-sm flex flex-col animate-fade-in" role="dialog" aria-modal="true" aria-label={current.title} onClick={close}>
+          <div className="flex items-center justify-between px-5 sm:px-8 h-16 text-white shrink-0">
+            <span className="font-mono text-xs tracking-[0.16em] uppercase text-white/60">{index + 1} / {shown.length}</span>
+            <button onClick={close} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white hover:text-ink flex items-center justify-center transition-colors" aria-label="Close"><X className="w-5 h-5" /></button>
+          </div>
+          <div className="flex-1 min-h-0 flex items-center justify-center px-4 sm:px-20 relative" onClick={(e) => e.stopPropagation()}>
+            {shown.length > 1 && (
+              <>
+                <button onClick={() => step(-1)} className="absolute left-3 sm:left-6 w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white hover:text-ink flex items-center justify-center transition-colors" aria-label="Previous"><ChevronLeft className="w-5 h-5" /></button>
+                <button onClick={() => step(1)} className="absolute right-3 sm:right-6 w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white hover:text-ink flex items-center justify-center transition-colors" aria-label="Next"><ChevronRight className="w-5 h-5" /></button>
+              </>
+            )}
+            {isVideo(current) ? (
+              <video src={current.url} controls autoPlay playsInline className="max-h-full max-w-full rounded-xl" />
+            ) : (
+              <img src={current.url} alt={current.title} className="max-h-full max-w-full object-contain rounded-xl" />
+            )}
+          </div>
+          <div className="px-5 sm:px-8 py-5 text-white shrink-0" onClick={(e) => e.stopPropagation()}>
+            <p className="font-display font-bold uppercase text-2xl leading-none">{current.title}</p>
+            {current.caption && <p className="text-sm text-white/60 mt-1.5">{current.caption}</p>}
           </div>
         </div>
       )}

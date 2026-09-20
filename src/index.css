@@ -6,4 +6,138 @@
   body {
     @apply bg-surface font-body-md text-on-surface antialiased;
   }
+
+  /* Public website root — overrides the admin body defaults */
+  .site {
+    @apply bg-chalk text-ink font-body antialiased;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  .site ::selection {
+    background: #1e3dff;
+    color: #fff;
+  }
+  .site :focus-visible {
+    outline: 3px solid #1e3dff;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .site--dark ::selection,
+  .site .on-dark ::selection {
+    background: #ffd60a;
+    color: #0c0d10;
+  }
+}
+
+@layer components {
+  /* ── Layout ─────────────────────────────────────────────────────────── */
+  .container-site {
+    @apply max-w-site mx-auto px-5 sm:px-8 lg:px-12;
+  }
+
+  /* ── Type roles ─────────────────────────────────────────────────────── */
+  .t-display {
+    @apply font-display font-extrabold uppercase leading-[0.92] tracking-[-0.01em];
+  }
+  .t-eyebrow {
+    @apply font-mono text-[11px] sm:text-xs uppercase tracking-[0.18em] font-medium;
+  }
+  .t-h2 {
+    @apply t-display text-[2.75rem] sm:text-6xl lg:text-7xl;
+  }
+  .t-lead {
+    @apply text-base sm:text-lg leading-relaxed text-ink/70;
+  }
+
+  /* ── Buttons ────────────────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold text-sm tracking-tight
+      px-6 py-3.5 transition-all duration-300 select-none whitespace-nowrap;
+  }
+  .btn-cobalt {
+    @apply btn bg-cobalt text-white shadow-cobalt hover:bg-cobalt-deep hover:-translate-y-0.5;
+  }
+  .btn-ink {
+    @apply btn bg-ink text-white hover:bg-ink-2 hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-ink border border-ink/20 hover:border-ink hover:bg-ink hover:text-white;
+  }
+  .btn-ghost-light {
+    @apply btn bg-white/10 text-white border border-white/25 backdrop-blur-md hover:bg-white hover:text-ink hover:border-white;
+  }
+  .btn-race {
+    @apply btn bg-race text-ink hover:bg-[#ffe14a] hover:-translate-y-0.5;
+  }
+
+  /* ── Chips / pills ──────────────────────────────────────────────────── */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] font-medium;
+  }
+  .chip-filter {
+    @apply chip px-4 py-2 cursor-pointer border transition-all duration-200
+      border-ink/15 text-ink/70 hover:border-ink hover:text-ink;
+  }
+  .chip-filter.is-active {
+    @apply bg-ink text-white border-ink;
+  }
+
+  /* ── Cards & inputs ─────────────────────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-2xl border border-concrete shadow-card;
+  }
+  .field {
+    @apply w-full rounded-xl bg-white/[0.06] border border-white/15 text-white placeholder:text-white/35
+      px-4 py-3.5 text-sm transition-all focus:outline-none focus:border-race focus:bg-white/[0.09];
+  }
+  .field-label {
+    @apply block font-mono text-[11px] uppercase tracking-[0.16em] text-white/60 mb-2;
+  }
+
+  /* ── Scroll reveal ──────────────────────────────────────────────────── */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1; transform: none; transition: none; }
+    .animate-marquee, .animate-rise-in, .animate-fade-in, .animate-scroll-cue { animation: none !important; }
+  }
+
+  /* ── Image treatment ────────────────────────────────────────────────── */
+  .img-zoom {
+    @apply w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)];
+  }
+  .group:hover .img-zoom { transform: scale(1.045); }
+
+  /* Race-yellow underline mark used behind a single display word */
+  .mark-race {
+    background-image: linear-gradient(transparent 62%, #ffd60a 62%, #ffd60a 92%, transparent 92%);
+    background-repeat: no-repeat;
+  }
+
+  /* Floodlight glow used on night sections */
+  .floodlight {
+    background-image:
+      radial-gradient(60% 50% at 15% 0%, rgba(30, 61, 255, 0.35) 0%, transparent 60%),
+      radial-gradient(45% 40% at 90% 100%, rgba(255, 214, 10, 0.12) 0%, transparent 60%);
+  }
+
+  /* Lane lines — thin horizontal rules that read as track markings */
+  .lanes {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 71px,
+      rgba(12, 13, 16, 0.06) 71px,
+      rgba(12, 13, 16, 0.06) 72px
+    );
+  }
 }

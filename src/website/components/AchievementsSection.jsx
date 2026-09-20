@@ -1,59 +1,82 @@
 import React from 'react';
-import { Trophy, Medal, Flag, Star } from 'lucide-react';
+import SectionHeader from './ui/SectionHeader';
+import { media } from '../lib/media';
 
-export default function AchievementsSection({ achievements }) {
+// The three headline achievements stand on a literal podium: the first record
+// takes the centre (1st) block, the second the left (2nd), the third the right
+// (3rd). Any further records are listed underneath.
+const PODIUM_PHOTOS = [media.podiumGlide, media.podiumGirls, media.podiumRyan];
+
+// Podium step: index in the CMS list → { slot order on desktop, base height, rank }
+const STEPS = [
+  { order: 'lg:order-2', base: 'lg:min-h-[11rem]', rank: 1 },
+  { order: 'lg:order-1', base: 'lg:min-h-[8rem]', rank: 2 },
+  { order: 'lg:order-3', base: 'lg:min-h-[5.5rem]', rank: 3 },
+];
+
+export default function AchievementsSection({ achievements = [] }) {
+  const podium = achievements.slice(0, 3);
+  const rest = achievements.slice(3);
+
   return (
-    <section className="w-full py-space-2xl bg-surface-container-lowest relative border-y border-outline-variant/20" id="achievements">
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-xl gap-space-md">
-          <div>
-            <span className="font-label-uppercase text-label-uppercase tracking-widest text-secondary font-bold text-[11px]">
-              CHAMPIONSHIP PODIUM WALL
-            </span>
-            <h2 className="font-headline-xl text-2xl sm:text-3xl md:text-4xl text-primary font-bold mt-1">
-              ACADEMY MEDAL TALLY
-            </h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-2 max-w-xl">
-              PRSA athletes regularly win top medals at District, RSFI State, RSFI National, and prestigious inter-school competitions.
-            </p>
-          </div>
-        </div>
+    <section id="achievements" className="relative bg-chalk py-20 sm:py-28 lg:py-36 lanes overflow-hidden">
+      <div className="container-site">
+        <SectionHeader
+          eyebrow="Results"
+          title={<>The podium<br />wall</>}
+          lead="Medals PRSA skaters have brought home from district, RSFI state, national and inter-school championships."
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-          {achievements.map((ach) => (
-            <div
-              key={ach.id}
-              className="bg-surface-container-low rounded-xl p-space-lg border border-outline-variant/30 flex flex-col justify-between hover:border-secondary/50 transition-all shadow-lg"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full bg-secondary-container/30 text-secondary font-bold text-xs">
-                    {ach.year} {ach.category}
-                  </span>
-                  <Trophy className="w-5 h-5 text-amber-400" />
-                </div>
-
-                {ach.image_url && (
-                  <div className="w-full h-40 rounded-lg overflow-hidden border border-outline-variant/20">
+        {podium.length === 0 ? (
+          <p className="mt-14 text-ink/60">Results will appear here after the next championship.</p>
+        ) : (
+          <div className="mt-16 lg:mt-24 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-4 items-end">
+            {podium.map((a, i) => {
+              const step = STEPS[i];
+              return (
+                <article key={a.id || i} className={`flex flex-col ${step.order}`} data-reveal style={{ '--reveal-delay': `${i * 120}ms` }}>
+                  {/* Photo */}
+                  <div className="relative rounded-2xl overflow-hidden bg-chalk-2 shadow-card group aspect-[4/3] lg:aspect-[4/5]">
                     <img
-                      src={ach.image_url}
-                      alt={ach.title}
-                      className="w-full h-full object-cover"
+                      src={a.image_url || PODIUM_PHOTOS[i]}
+                      alt={a.title}
+                      className="img-zoom"
+                      loading="lazy"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PODIUM_PHOTOS[i]; }}
                     />
+                    <div className="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent text-white">
+                      <span className="chip bg-race text-ink">{a.year} · {a.category}</span>
+                      <p className="font-display font-extrabold uppercase text-5xl sm:text-6xl leading-none mt-3">{a.count_label}</p>
+                    </div>
                   </div>
-                )}
 
+                  {/* Podium base */}
+                  <div className={`mt-4 rounded-2xl bg-ink text-white p-5 sm:p-6 flex gap-5 items-start ${step.base} ${i === 0 ? 'lg:bg-cobalt' : ''}`}>
+                    <span className="font-display font-extrabold text-6xl leading-none text-race shrink-0" aria-label={`Position ${step.rank}`}>{step.rank}</span>
+                    <div className="min-w-0">
+                      <h3 className="font-display font-bold uppercase text-2xl leading-none">{a.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-white/70 line-clamp-3">{a.description}</p>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+
+        {rest.length > 0 && (
+          <ul className="mt-10 grid sm:grid-cols-2 gap-3" data-reveal>
+            {rest.map((a, i) => (
+              <li key={a.id || i} className="card p-5 flex gap-4 items-start">
+                <span className="font-display font-extrabold uppercase text-3xl leading-none text-cobalt shrink-0">{a.count_label}</span>
                 <div>
-                  <span className="text-secondary font-bold text-xl block">{ach.count_label}</span>
-                  <h3 className="text-lg font-bold text-primary mt-1">{ach.title}</h3>
-                  <p className="text-xs text-on-surface-variant mt-2 leading-relaxed">
-                    {ach.description}
-                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/50">{a.year} · {a.category}</p>
+                  <h3 className="font-semibold mt-1 text-ink">{a.title}</h3>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

@@ -1,55 +1,35 @@
 import React from 'react';
 
-export default function Metrics({ content }) {
-  const stat1Val = content.stat_1_val || "850+";
-  const stat1Lbl = content.stat_1_lbl || "ACTIVE SKATERS TRAINED";
-  const stat2Val = content.stat_2_val || "12+";
-  const stat2Lbl = content.stat_2_lbl || "NATIONAL CHAMPIONSHIP MEDALS";
-  const stat3Val = content.stat_3_val || "8 RSFI";
-  const stat3Lbl = content.stat_3_lbl || "CERTIFIED CHIEF COACHES";
-  const stat4Val = content.stat_4_val || "100%";
-  const stat4Lbl = content.stat_4_lbl || "SAFETY & HELMET COMPLIANCE";
+// Four academy numbers from the CMS, set like a results board: big condensed
+// figures, mono labels, hairline dividers.
+export default function Metrics({ content = {} }) {
+  const stats = [
+    { val: content.stat_1_val || '850+', lbl: content.stat_1_lbl || 'Skaters trained' },
+    { val: content.stat_2_val || '12+', lbl: content.stat_2_lbl || 'National medals' },
+    { val: content.stat_3_val || '8', lbl: content.stat_3_lbl || 'RSFI certified coaches' },
+    { val: content.stat_4_val || '100%', lbl: content.stat_4_lbl || 'Helmet & guard compliance' },
+  ];
 
   return (
-    <section className="w-full bg-surface-container-low py-space-md shadow-xl relative z-20 border-y border-outline-variant/20">
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-space-md gap-x-space-sm divide-y-0 md:divide-y-0">
-          <div className="p-space-sm flex flex-col justify-center">
-            <div className="flex items-baseline gap-1 text-primary">
-              <span className="font-metric-stat text-metric-stat font-bold text-4xl md:text-5xl">{stat1Val}</span>
+    <section className="bg-ink text-white border-t border-white/10 on-dark" aria-label="Academy numbers">
+      <div className="container-site">
+        <dl className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-white/10 border-x border-white/10">
+          {stats.map((s, i) => (
+            <div
+              key={i}
+              className={`px-5 sm:px-8 py-7 lg:py-9 ${i >= 2 ? 'border-t border-white/10 lg:border-t-0' : ''}`}
+              data-reveal
+              style={{ '--reveal-delay': `${i * 80}ms` }}
+            >
+              <dd className="font-display font-extrabold uppercase text-5xl sm:text-6xl lg:text-7xl leading-none tracking-tight">
+                {s.val}
+              </dd>
+              <dt className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.16em] text-white/55 mt-3">
+                {s.lbl}
+              </dt>
             </div>
-            <span className="font-label-uppercase text-label-uppercase tracking-wider text-on-surface-variant font-medium mt-1 text-[11px]">
-              {stat1Lbl}
-            </span>
-          </div>
-
-          <div className="p-space-sm flex flex-col justify-center">
-            <div className="flex items-baseline gap-1 text-secondary">
-              <span className="font-metric-stat text-metric-stat font-bold text-4xl md:text-5xl">{stat2Val}</span>
-            </div>
-            <span className="font-label-uppercase text-label-uppercase tracking-wider text-on-surface-variant font-medium mt-1 text-[11px]">
-              {stat2Lbl}
-            </span>
-          </div>
-
-          <div className="p-space-sm flex flex-col justify-center">
-            <div className="flex items-baseline gap-1 text-primary">
-              <span className="font-metric-stat text-metric-stat font-bold text-4xl md:text-5xl">{stat3Val}</span>
-            </div>
-            <span className="font-label-uppercase text-label-uppercase tracking-wider text-on-surface-variant font-medium mt-1 text-[11px]">
-              {stat3Lbl}
-            </span>
-          </div>
-
-          <div className="p-space-sm flex flex-col justify-center bg-surface-container-high/40 rounded-lg">
-            <div className="flex items-baseline gap-1 text-primary-container">
-              <span className="font-metric-stat text-metric-stat font-bold text-4xl md:text-5xl">{stat4Val}</span>
-            </div>
-            <span className="font-label-uppercase text-label-uppercase tracking-wider text-on-surface-variant font-medium mt-1 text-[11px]">
-              {stat4Lbl}
-            </span>
-          </div>
-        </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

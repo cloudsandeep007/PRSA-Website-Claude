@@ -1,43 +1,50 @@
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import SectionHeader from './ui/SectionHeader';
 
-export default function FAQSection({ faqs }) {
-  const [openIndex, setOpenIndex] = useState(0);
+export default function FAQSection({ faqs = [], settings = {} }) {
+  const [open, setOpen] = useState(0);
+  const whatsapp = (settings.whatsapp || '919876543210').replace(/[^0-9]/g, '');
 
   return (
-    <section className="w-full py-space-2xl bg-surface relative" id="faq">
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin">
-        <div className="max-w-3xl mx-auto space-y-space-md">
-          <div className="text-center space-y-space-xs mb-space-xl">
-            <span className="font-label-uppercase text-label-uppercase tracking-widest text-primary-container font-bold text-[11px]">
-              QUESTIONS ANSWERED
-            </span>
-            <h3 className="font-headline-lg text-2xl sm:text-3xl md:text-4xl text-primary font-bold">
-              FREQUENTLY ASKED QUESTIONS
-            </h3>
+    <section id="faq" className="bg-white py-20 sm:py-28 lg:py-36 border-t border-concrete">
+      <div className="container-site">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+          <div className="lg:col-span-4">
+            <SectionHeader eyebrow="Questions" title={<>Before you<br />book</>} />
+            <p className="mt-6 text-ink/65 leading-relaxed" data-reveal>
+              Anything else? Message the academy on WhatsApp — a coach usually replies within the hour during batch times.
+            </p>
+            <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('Hi PRSA, I have a question about classes.')}`} target="_blank" rel="noopener noreferrer" className="btn-ghost mt-6" data-reveal>
+              Ask on WhatsApp
+            </a>
           </div>
 
-          <div className="space-y-space-xs">
-            {faqs.map((faq, idx) => {
-              const isOpen = openIndex === idx;
+          <div className="lg:col-span-8 border-t border-ink/15" data-reveal>
+            {faqs.length === 0 && <p className="py-8 text-ink/60">Questions and answers will appear here.</p>}
+            {faqs.map((f, i) => {
+              const isOpen = open === i;
               return (
-                <div
-                  key={faq.id}
-                  className="bg-surface-container-low rounded-xl border border-outline-variant/20 overflow-hidden transition-colors"
-                >
+                <div key={f.id || i} className="border-b border-ink/15">
                   <button
-                    onClick={() => setOpenIndex(isOpen ? null : idx)}
-                    className="w-full p-space-md font-label-md text-label-md text-primary font-bold flex items-center justify-between text-left focus:outline-none"
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    className="w-full py-6 flex items-start justify-between gap-6 text-left group"
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-${i}`}
                   >
-                    <span className="pr-4 text-sm">{faq.question}</span>
-                    <ChevronDown className={`w-5 h-5 text-primary-container shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    <span className="font-display font-bold uppercase text-2xl sm:text-3xl leading-none text-ink group-hover:text-cobalt transition-colors">{f.question}</span>
+                    <span className={`w-9 h-9 rounded-full border border-ink/20 flex items-center justify-center shrink-0 transition-all duration-300 ${isOpen ? 'bg-ink text-white rotate-45 border-ink' : 'text-ink group-hover:border-ink'}`}>
+                      <Plus className="w-4 h-4" />
+                    </span>
                   </button>
-
-                  {isOpen && (
-                    <div className="px-space-md pb-space-md pt-0 text-xs text-on-surface-variant leading-relaxed animate-in fade-in duration-200">
-                      {faq.answer}
+                  <div
+                    id={`faq-${i}`}
+                    className={`grid transition-[grid-template-rows] duration-400 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="pb-7 pr-12 text-base leading-relaxed text-ink/70 max-w-2xl">{f.answer}</p>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })}
