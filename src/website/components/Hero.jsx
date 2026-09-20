@@ -35,7 +35,6 @@ export default function Hero({ content = {}, settings = {} }) {
   const ctaSecondaryLink = content.hero_cta_secondary_link || '#gallery';
 
   const heroType = content.hero_type || 'video';
-  const poster = content.hero_bg_image || media.heroPoster;
 
   let videoUrl = content.hero_video_url;
   if (!videoUrl || videoUrl === 'SESSION_VIDEO') {
@@ -43,6 +42,19 @@ export default function Hero({ content = {}, settings = {} }) {
   }
   if (!videoUrl) videoUrl = media.heroVideo;
   const ytEmbed = toYouTubeEmbed(videoUrl);
+
+  // In video mode the still behind the video must be the video's own first
+  // frame, otherwise an unrelated photo flashes for a moment and then vanishes
+  // when playback starts. We only have that frame for the academy's own clip,
+  // so any other video starts from the plain dark background instead.
+  const isAcademyClip = /(hero|prsa_hero_video|create_a_video_for_my_sketing)\.mp4(\?|$)/i.test(videoUrl);
+  // The academy clip is bundled with the site, so serve the local copy rather
+  // than re-downloading the same file from remote storage on every visit.
+  if (isAcademyClip) videoUrl = media.heroVideo;
+  const poster = heroType === 'video'
+    ? (isAcademyClip && !ytEmbed ? media.heroPoster : null)
+    : (content.hero_bg_image || media.heroPoster);
+  const [playing, setPlaying] = useState(false);
 
   const slides = parseSlides(content.hero_slideshow_urls) || [media.rinkNight1, media.squadRoad, media.podiumGlide];
   const [slide, setSlide] = useState(0);
@@ -56,7 +68,7 @@ export default function Hero({ content = {}, settings = {} }) {
     <section id="top" className="relative w-full min-h-[100svh] bg-ink overflow-hidden flex flex-col justify-end text-white on-dark">
       {/* ── Background media ─────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0">
-        <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+        {poster && <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />}
 
         {heroType === 'video' && (
           ytEmbed ? (
@@ -69,13 +81,13 @@ export default function Hero({ content = {}, settings = {} }) {
           ) : (
             <video
               src={videoUrl}
-              poster={poster}
               autoPlay
               loop
               muted
               playsInline
-              preload="metadata"
-              className="absolute inset-0 w-full h-full object-cover animate-fade-in"
+              preload="auto"
+              onPlaying={() => setPlaying(true)}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${playing ? 'opacity-100' : 'opacity-0'}`}
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           )
