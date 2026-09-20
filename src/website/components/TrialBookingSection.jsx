@@ -31,13 +31,27 @@ function emptyForm(locations) {
   };
 }
 
-export default function TrialBookingSection({ locations = [] }) {
+export default function TrialBookingSection({ locations = [], settings = {} }) {
   const [form, setForm] = useState(() => emptyForm(locations));
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
 
   const set = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+  // Fallback when the booking API cannot be reached: the same details, sent
+  // to the academy's WhatsApp number as a pre-written message.
+  const whatsappNum = (settings.whatsapp || '919876543210').replace(/[^0-9]/g, '');
+  const whatsappFallback = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(
+    `Hi PRSA, I'd like to book a free trial.
+Skater: ${form.athlete_name} (age ${form.age})
+Phone: ${form.parent_phone}
+Email: ${form.email}
+Program: ${form.discipline}
+Venue: ${form.location}
+Experience: ${form.experience}${form.message ? `
+Notes: ${form.message}` : ''}`
+  )}`;
 
   async function submit(e) {
     e.preventDefault();
@@ -54,10 +68,10 @@ export default function TrialBookingSection({ locations = [] }) {
         setDone(true);
         setForm(emptyForm(locations));
       } else {
-        setError(data.error || 'We could not save your booking. Please try again or message us on WhatsApp.');
+        setError(data.error || 'We could not save your booking right now. Send the same details on WhatsApp instead.');
       }
     } catch (err) {
-      setError('No connection. Check your internet and try again.');
+      setError('We could not reach the booking service. Send the same details on WhatsApp instead.');
     } finally {
       setLoading(false);
     }
@@ -113,8 +127,9 @@ export default function TrialBookingSection({ locations = [] }) {
               ) : (
                 <form onSubmit={submit} className="space-y-5" noValidate={false}>
                   {error && (
-                    <div role="alert" className="rounded-xl border border-race/40 bg-race/10 text-race text-sm p-3.5 flex gap-2.5 items-start">
-                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> <span>{error}</span>
+                    <div role="alert" className="rounded-xl border border-race/40 bg-race/10 text-race text-sm p-3.5 flex flex-col sm:flex-row gap-3 sm:items-center">
+                      <span className="flex gap-2.5 items-start flex-1"><AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> <span>{error}</span></span>
+                      <a href={whatsappFallback} target="_blank" rel="noopener noreferrer" className="btn-race !py-2 !px-4 text-[13px] shrink-0">Send on WhatsApp</a>
                     </div>
                   )}
 

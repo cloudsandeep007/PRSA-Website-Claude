@@ -16,17 +16,23 @@ import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import useReveal from './hooks/useReveal';
+import {
+  defaultContent, defaultSettings, defaultPrograms, defaultCoaches, defaultEvents,
+  defaultAchievements, defaultGallery, defaultTestimonials, defaultLocations, defaultFaqs,
+} from './lib/defaults';
 
-// fetch() only rejects on a network failure, not on a 4xx/5xx response — an
-// API error still resolves, so every endpoint falls back to its default
-// instead of crashing the page on a single transient failure.
+// Loads one endpoint. Only when the request itself fails (network error,
+// 5xx, malformed body) does the built-in default take over — a deployment
+// whose API is down still shows a complete site. When the API answers, its
+// data is used as-is, including a deliberately empty list.
 async function fetchJson(url, fallback) {
   try {
     const res = await fetch(url);
     if (!res.ok) return fallback;
     const data = await res.json();
     if (Array.isArray(fallback) && !Array.isArray(data)) return fallback;
-    return data ?? fallback;
+    if (!Array.isArray(fallback) && (typeof data !== 'object' || data === null)) return fallback;
+    return data;
   } catch (err) {
     return fallback;
   }
@@ -43,19 +49,24 @@ export default function PublicSite() {
     let cancelled = false;
     (async () => {
       const [content, settings, programs, coaches, events, achievements, gallery, testimonials, locations, faqs] = await Promise.all([
-        fetchJson('/api/content', {}),
-        fetchJson('/api/settings', {}),
-        fetchJson('/api/programs', []),
-        fetchJson('/api/coaches', []),
-        fetchJson('/api/events', []),
-        fetchJson('/api/achievements', []),
-        fetchJson('/api/gallery', []),
-        fetchJson('/api/testimonials', []),
-        fetchJson('/api/locations', []),
-        fetchJson('/api/faqs', []),
+        fetchJson('/api/content', defaultContent),
+        fetchJson('/api/settings', defaultSettings),
+        fetchJson('/api/programs', defaultPrograms),
+        fetchJson('/api/coaches', defaultCoaches),
+        fetchJson('/api/events', defaultEvents),
+        fetchJson('/api/achievements', defaultAchievements),
+        fetchJson('/api/gallery', defaultGallery),
+        fetchJson('/api/testimonials', defaultTestimonials),
+        fetchJson('/api/locations', defaultLocations),
+        fetchJson('/api/faqs', defaultFaqs),
       ]);
       if (cancelled) return;
-      setData({ content, settings, programs, coaches, events, achievements, gallery, testimonials, locations, faqs });
+      // Key/value endpoints: fill any key the CMS has not set from the defaults
+      setData({
+        content: { ...defaultContent, ...content },
+        settings: { ...defaultSettings, ...settings },
+        programs, coaches, events, achievements, gallery, testimonials, locations, faqs,
+      });
       setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -93,7 +104,7 @@ export default function PublicSite() {
         <GallerySection gallery={gallery} />
         <EventsSection events={events} />
         <TestimonialsSection testimonials={testimonials} />
-        <TrialBookingSection locations={locations} />
+        <TrialBookingSection locations={locations} settings={settings} />
         <LocationsSection locations={locations} />
         <FAQSection faqs={faqs} settings={settings} />
       </main>
