@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { media } from '../lib/media';
 
@@ -55,6 +55,49 @@ export default function Hero({ content = {}, settings = {} }) {
     ? (isAcademyClip && !ytEmbed ? media.heroPoster : null)
     : (content.hero_bg_image || media.heroPoster);
   const [playing, setPlaying] = useState(false);
+  const videoRef = useRef(null);
+
+  // Autoplay is not guaranteed even for muted video: React sets `muted` as a
+  // property (not an attribute), some browsers evaluate autoplay before it
+  // applies, low-power / data-saver modes refuse it, and a background tab
+  // pauses it. So we drive playback ourselves: force muted, call play(),
+  // and retry on the first interaction, when data arrives, and when the tab
+  // becomes visible again. If the file fails to load, reload it once.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || heroType !== 'video' || ytEmbed) return;
+
+    v.muted = true;
+    v.defaultMuted = true;
+    let retries = 0;
+
+    const tryPlay = () => {
+      if (!v.paused) return;
+      const p = v.play();
+      if (p && p.catch) p.catch(() => {});
+    };
+    const onVisible = () => { if (document.visibilityState === 'visible') tryPlay(); };
+    const onError = () => {
+      if (retries++ < 2) setTimeout(() => { v.load(); tryPlay(); }, 1500 * retries);
+    };
+    const interactionEvents = ['pointerdown', 'touchstart', 'keydown', 'scroll'];
+    const onInteract = () => tryPlay();
+
+    tryPlay();
+    v.addEventListener('loadeddata', tryPlay);
+    v.addEventListener('canplay', tryPlay);
+    v.addEventListener('error', onError);
+    document.addEventListener('visibilitychange', onVisible);
+    interactionEvents.forEach(e => window.addEventListener(e, onInteract, { passive: true }));
+
+    return () => {
+      v.removeEventListener('loadeddata', tryPlay);
+      v.removeEventListener('canplay', tryPlay);
+      v.removeEventListener('error', onError);
+      document.removeEventListener('visibilitychange', onVisible);
+      interactionEvents.forEach(e => window.removeEventListener(e, onInteract));
+    };
+  }, [heroType, ytEmbed, videoUrl]);
 
   const slides = parseSlides(content.hero_slideshow_urls) || [media.rinkNight1, media.squadRoad, media.podiumGlide];
   const [slide, setSlide] = useState(0);
@@ -80,15 +123,16 @@ export default function Hero({ content = {}, settings = {} }) {
             />
           ) : (
             <video
+              ref={videoRef}
               src={videoUrl}
               autoPlay
               loop
               muted
               playsInline
               preload="auto"
+              disablePictureInPicture
               onPlaying={() => setPlaying(true)}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${playing ? 'opacity-100' : 'opacity-0'}`}
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           )
         )}
